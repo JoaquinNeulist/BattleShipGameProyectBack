@@ -14,6 +14,10 @@ public class Board {
     @Column
     private String configuration;
 
+    @ElementCollection
+    @CollectionTable(name = "board_coordinates", joinColumns = @JoinColumn(name = "board_id"))
+    private List<Coordinate> coordinates = new ArrayList<>();
+
     @ManyToOne
     private PlayerMatch playerMatch;
 
@@ -49,6 +53,14 @@ public class Board {
         return configuration;
     }
 
+    public List<Coordinate> getCoordinates() {
+        return coordinates;
+    }
+
+    public void setCoordinates(List<Coordinate> coordinates) {
+        this.coordinates = coordinates;
+    }
+
     public void setConfiguration(String configuration) {
         this.configuration = configuration;
     }
@@ -73,6 +85,10 @@ public class Board {
     public void addShip(Ship ship){
         ship.setBoard(this);
         ships.add(ship);
+    }
+
+    public void addCoordinate(Coordinate coordinate){
+        coordinates.add(coordinate);
     }
 
 }
