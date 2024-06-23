@@ -1,0 +1,64 @@
+package com.Battleship.Game.models;
+
+import jakarta.persistence.*;
+
+@Entity
+public class Shoot {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+
+    private int cordX;
+
+    private int cordY;
+
+    private ShootResult result;
+
+    @ManyToOne
+    private Board board;
+
+    public Shoot () {}
+
+    public Shoot (int cordX, int cordY, ShootResult result){
+        this.cordX = cordX;
+        this.cordY = cordY;
+        this.result = result;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public int getCordX() {
+        return cordX;
+    }
+
+    public int getCordY() {
+        return cordY;
+    }
+
+    public ShootResult getResult() {
+        return result;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public void setCordX(int cordX) {
+        this.cordX = cordX;
+    }
+
+    public void setCordY(int cordY) {
+        this.cordY = cordY;
+    }
+
+    public void setResult(ShootResult result) {
+        this.result = result;
+    }
+
+    public void setBoard(Board board) {
+        this.board = board;
+    }
+}
+
