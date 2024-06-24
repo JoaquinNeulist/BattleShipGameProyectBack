@@ -93,7 +93,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board initializeBoard(Board board, List<Ship> ships) {
-        return null;
+        for (Ship ship : ships){
+            placeShip(board, ship);
+        }
+        return board;
     }
 
     private  boolean isOccupied(Board board, int x, int y){
