@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class BoardServiceImpl implements BoardService {
+
+
     @Override
     public Board createBoard(String configuration) {
         Board board = new Board();
