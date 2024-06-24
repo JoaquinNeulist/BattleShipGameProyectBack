@@ -82,6 +82,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public ResponseEntity<?> getCurrentUser(Authentication authentication) {
         Account account = accountService.findByEmail(authentication.getName());
-        return ResponseEntity.ok(accountService.getAccountDTO(account));
+        if(account != null){
+            return ResponseEntity.ok(accountService.getAccountDTO(account));
+        }else{
+            throw new AccessDeniedException("User not found");
+        }
     }
 }

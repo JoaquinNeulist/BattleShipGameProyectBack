@@ -46,7 +46,7 @@ public class AccountDTO {
         return email;
     }
 
-    public List<PlayerMatchDTO> getPlayerMatchDTOS() {
+    public List<PlayerMatchDTO> getPlayerMatch() {
         return playerMatchDTOS;
     }
 }

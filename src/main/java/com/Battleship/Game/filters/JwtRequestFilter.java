@@ -20,36 +20,43 @@ import java.io.IOException;
 public class JwtRequestFilter extends OncePerRequestFilter {
 
     @Autowired
-    UserDetailsService userDetailsService;
+    private UserDetailsService userDetailsService;
 
     @Autowired
-    JwtUtilService jwtUtilService;
+    private JwtUtilService jwtUtilService;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
         try {
-            String authorizationHeader = request.getHeader("Authorization");
-            String token = null;
-            String username = null;
+            final String authorizationHeader = request.getHeader("Authorization");
+            String userName = null;
+            String jwt = null;
 
-            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-                token = authorizationHeader.substring(7);
-                username = jwtUtilService.extractUsername(token);
+            if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
+                jwt = authorizationHeader.substring(7);
+                userName = jwtUtilService.extractUsername(jwt);
             }
-            if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-                if (jwtUtilService.isTokenExpired(token)) {
-                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+
+            if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null){
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(userName);
+                if (!jwtUtilService.isTokenExpired(jwt)){
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
+                    );
+
                     authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e){
             System.out.println(e.getMessage());
-        } finally {
+        }
+        finally {
             filterChain.doFilter(request, response);
         }
     }
 }
+
 
 
