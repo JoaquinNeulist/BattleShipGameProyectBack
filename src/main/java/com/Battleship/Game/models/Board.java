@@ -7,6 +7,8 @@ import java.util.List;
 
 @Entity
 public class Board {
+
+    //Attributes
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -18,21 +20,29 @@ public class Board {
     @CollectionTable(name = "board_coordinates", joinColumns = @JoinColumn(name = "board_id"))
     private List<Coordinate> coordinates = new ArrayList<>();
 
-    @ManyToOne
-    private PlayerMatch playerMatch;
+    @ManyToOne // Añadido mapeo inverso
+    private PlayerMatch playerMatch; // Corrección aquí
 
-    @OneToMany
+    @OneToMany(mappedBy = "board")
     private List<Ship> ships = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "board")
     private List<Shoot> shoots = new ArrayList<>();
 
-    public Board (){}
+   //Constructors
+    public Board(String configuration, PlayerMatch playerMatch) {
+        this.configuration = configuration;
+        this.playerMatch = playerMatch;
+    }
 
-    public Board (String configuration){
+    public Board() {
+    }
+
+    public Board(String configuration) {
         this.configuration = configuration;
     }
 
+    //Getters and setters
     public long getId() {
         return id;
     }
@@ -77,18 +87,19 @@ public class Board {
         this.shoots = shoots;
     }
 
-    public void addShoot(Shoot shoot){
+    //Methods
+    public void addShoot(Shoot shoot) {
         shoot.setBoard(this);
         shoots.add(shoot);
     }
 
-    public void addShip(Ship ship){
+    public void addShip(Ship ship) {
         ship.setBoard(this);
         ships.add(ship);
     }
 
-    public void addCoordinate(Coordinate coordinate){
+    public void addCoordinate(Coordinate coordinate) {
         coordinates.add(coordinate);
     }
-
 }
+

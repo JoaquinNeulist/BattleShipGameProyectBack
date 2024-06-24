@@ -1,13 +1,13 @@
 package com.Battleship.Game.repositories;
 
-import com.Battleship.Game.models.User;
+import com.Battleship.Game.models.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    User findByEmail (String email);
+    Account findByEmail (String email);
 
     Boolean existsByEmail (String email);
 }

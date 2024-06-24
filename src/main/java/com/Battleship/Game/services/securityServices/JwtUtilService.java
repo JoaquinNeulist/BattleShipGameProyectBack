@@ -51,6 +51,5 @@ public class JwtUtilService {
         claims.put("rol", rol);
         return createToken(claims, userDetails.getUsername());
     }
-
 }
 

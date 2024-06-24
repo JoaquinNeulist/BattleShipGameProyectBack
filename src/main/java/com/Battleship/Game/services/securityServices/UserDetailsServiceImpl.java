@@ -1,6 +1,6 @@
 package com.Battleship.Game.services.securityServices;
-
-import com.Battleship.Game.services.UserService;
+import com.Battleship.Game.models.Account;
+import com.Battleship.Game.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,19 +12,25 @@ import org.springframework.stereotype.Service;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private UserService userService;
+    private AccountService accountService;
 
     @Override
-    public UserDetails loadUserByUsername (String username) throws UsernameNotFoundException{
-        com.Battleship.Game.models.User user = userService.findByEmail(username);
-        if (user == null){
-            throw  new UsernameNotFoundException(username);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Account account = accountService.findByEmail(username);
+        if (account == null) {
+            throw new UsernameNotFoundException(username);
+        }
+        if (account.isAdmin()){
+            return User
+                    .withUsername(username)
+                    .password(account.getPassword())
+                    .roles("ADMIN")
+                    .build();
         }
         return User
                 .withUsername(username)
-                .password(user.getPassword())
+                .password(account.getPassword())
                 .roles("CLIENT")
                 .build();
     }
-
 }

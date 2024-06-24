@@ -1,59 +1,78 @@
 package com.Battleship.Game.models;
 
 import jakarta.persistence.*;
+import java.util.List;
 
 @Entity
-public class Ranking {
+public class Ranking implements Comparable<Ranking> {
+
+    //Attributes
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    private String username;
-
-    private long score;
+    private int score;
 
     private long position;
 
-    @ManyToOne
-    @JoinColumn(name = "User_Id")
-    private User user;
+    @OneToMany(mappedBy = "ranking")
+    private List<Account> accounts;
 
-    public Ranking (){}
+    //Constructors
+    public Ranking() {
+    }
 
-    public Ranking (long score, long position){
+    public Ranking(int score, long position) {
         this.position = position;
         this.score = score;
     }
 
+    //Getters and setters
     public long getId() {
         return id;
-    }
-
-    public String getUsername() {
-        return user.getUsername();
     }
 
     public long getPosition() {
         return position;
     }
 
-    public long getScore() {
+    public int getScore() {
         return score;
     }
 
-    public User getUser() {
-        return user;
+    public List<Account> getUsers() {
+        return accounts;
     }
 
     public void setPosition(long position) {
         this.position = position;
     }
 
-    public void setScore(long score) {
+    public void setScore(int score) {
         this.score = score;
     }
 
-    public void setUser(User user) {
-        this.user = user;
+    public void setUsers(List<Account> accounts) {
+        this.accounts = accounts;
+    }
+
+    //Methods
+    public void addUser(Account account) {
+        account.setRanking(this);
+        accounts.add(account);
+    }
+
+    public void incrementScore(int points) {
+        this.score += points;
+    }
+
+    public void decrementScore(int points) {
+        this.score -= points;
+    }
+
+    @Override
+    public int compareTo(Ranking other) {
+        // Comparar por puntaje descendente
+        return Integer.compare(other.score, this.score);
     }
 }

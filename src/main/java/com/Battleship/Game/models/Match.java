@@ -1,15 +1,14 @@
 package com.Battleship.Game.models;
 
 import jakarta.persistence.*;
-import org.springframework.boot.SpringApplication;
-
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Match {
+
+    //Attributes
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
@@ -20,12 +19,14 @@ public class Match {
 
     private LocalDateTime finalTime;
 
-    @OneToMany
+    @OneToMany(mappedBy = "match")
     private List<PlayerMatch> playerMatches = new ArrayList<>();
 
-    public Match() {
 
+    //Constructors
+    public Match() {
     }
+
     public Match(MatchState state, LocalDateTime startTime, LocalDateTime finalTime) {
         this.state = state;
         this.startTime = startTime;
@@ -33,6 +34,7 @@ public class Match {
     }
 
 
+    //Getters and setters
     public long getId() {
         return id;
     }
@@ -69,7 +71,8 @@ public class Match {
         this.playerMatches = playerMatches;
     }
 
-    public void addPlayersMatch(PlayerMatch playerMatch){
+    //Methods
+    public void addPlayersMatch(PlayerMatch playerMatch) {
         playerMatch.setMatch(this);
         playerMatches.add(playerMatch);
     }

@@ -5,13 +5,16 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Entity
-public class User {
+public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private String email;
+
+    private boolean isAdmin;
 
     private String fName;
 
@@ -22,20 +25,21 @@ public class User {
 
     public String password;
 
-    @OneToMany
-    private List<Ranking> rankings = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "account")
     private List<PlayerMatch> playersInMatch = new ArrayList<>();
 
-    public User (){}
+    @ManyToOne
+    private Ranking ranking;
 
-    public User (String email, String fName, String lName, String username, String password){
+    public Account(){}
+
+    public Account(String email, String fName, String lName, String username, String password) {
         this.email = email;
         this.fName = fName;
         this.lName = lName;
         this.username = username;
         this.password = password;
+        this.isAdmin = false; //por defecto el rol de usuario es USER
     }
 
     public long getId() {
@@ -62,12 +66,16 @@ public class User {
         return password;
     }
 
-    public List<PlayerMatch> getPlayersInMatch() {
-        return playersInMatch;
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
-    public List<Ranking> getRankings() {
-        return rankings;
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public List<PlayerMatch> getPlayersInMatch() {
+        return playersInMatch;
     }
 
     public void setEmail(String email) {
@@ -94,17 +102,30 @@ public class User {
         this.playersInMatch = playersInMatch;
     }
 
-    public void setRankings(List<Ranking> rankings) {
-        this.rankings = rankings;
-    }
-
     public void addPlayersInMatch(PlayerMatch playerMatchs){
         playerMatchs.setUserId(this);
         playersInMatch.add(playerMatchs);
     }
 
-    public void addRankings(Ranking ranking){
-        ranking.setUser(this);
-        rankings.add(ranking);
+    public Ranking getRanking() {
+            return ranking;
+    }
+
+    public void setRanking(Ranking ranking) {
+        this.ranking = ranking;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", email='" + email + '\'' +
+                ", fName='" + fName + '\'' +
+                ", lName='" + lName + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", rankings=" + ranking +
+                ", playersInMatch=" + playersInMatch +
+                '}';
     }
 }

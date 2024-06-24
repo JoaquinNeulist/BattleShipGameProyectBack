@@ -13,12 +13,15 @@ public class ShipDTO {
 
     private ShipType type;
 
+    private int size;
+
     // Constructor con argumentos
     public ShipDTO(Ship ship) {
         this.id = ship.getId();
         this.isSideways = ship.isSideways();
         this.type = ship.getShipType();
         this.status = ship.getStatus();
+        this.size = ship.getSize();
     }
 
     // Getters
@@ -33,6 +36,10 @@ public class ShipDTO {
 
     public ShipType getType() {
         return type;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public boolean isSideways() {

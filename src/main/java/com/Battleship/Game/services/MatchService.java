@@ -13,4 +13,12 @@ public interface MatchService {
 
     Match getMatchById(Long id);
 
+    Match joinMatch(Long matchId, PlayerMatch player);
+
+    Match leaveMatch(Long matchId, Long playerId);
+
+    Match updateMatch(Long matchId, Match updatedMatch);
+
+    void deleteMatch(Long matchId);
+
 }

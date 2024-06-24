@@ -1,6 +1,6 @@
 package com.Battleship.Game;
 
-import com.Battleship.Game.models.User;
+import com.Battleship.Game.models.Account;
 import com.Battleship.Game.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -21,7 +21,7 @@ public class GameApplication {
 
 	@Bean
 	public CommandLineRunner initData(
-			UserRepository userRepository,
+			AccountRepository accountRepository,
 			MatchRepository matchRepository,
 			PlayerMatchRepository playerMatchRepository,
 			BoardRepository boardRepository,
@@ -30,11 +30,13 @@ public class GameApplication {
 			RankingRepository rankingRepository
 	){
 		return args -> {
-			User user1 = new User("Test@mail.com", "joaco", "neulist", "Jota", passwordEncoder.encode("123"));
-			userRepository.save(user1);
+			Account account1 = new Account("Test@mail.com", "joaco", "neulist", "Jota", passwordEncoder.encode("123"));
+			accountRepository.save(account1);
+			System.out.println(account1);
+			account1.setAdmin(true);
+			System.out.println(account1);
 		};
 	}
-
 }
 
 

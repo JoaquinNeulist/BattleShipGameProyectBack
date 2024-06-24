@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.Battleship.Game.models.PlayerMatch;
-import  com.Battleship.Game.models.playerStatus;
+import com.Battleship.Game.models.PlayerStatus;
 
 public class PlayerMatchDTO {
     private long id;
@@ -15,7 +15,7 @@ public class PlayerMatchDTO {
 
     private boolean turn;
 
-    private playerStatus type;
+    private PlayerStatus type;
 
     private List<BoardDTO> boardDTOS = new ArrayList<>();
 
@@ -39,7 +39,7 @@ public class PlayerMatchDTO {
         return matchDuration;
     }
 
-    public playerStatus getType() {
+    public PlayerStatus getType() {
         return type;
     }
 

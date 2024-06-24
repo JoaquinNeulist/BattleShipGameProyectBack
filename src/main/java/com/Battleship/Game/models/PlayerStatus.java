@@ -1,6 +1,6 @@
 package com.Battleship.Game.models;
 
-public enum playerStatus {
+public enum PlayerStatus {
     WAITING_FOR_OPPONENT, // Esperando a que otro jugador se una a la partida
     PLACING_SHIPS,        // Colocando los barcos en el tablero
     READY,                // Listo para comenzar el juego

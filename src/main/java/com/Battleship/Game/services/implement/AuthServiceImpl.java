@@ -2,19 +2,22 @@ package com.Battleship.Game.services.implement;
 
 import com.Battleship.Game.dtos.LoginDTO;
 import com.Battleship.Game.dtos.RegisterDTO;
-import com.Battleship.Game.models.User;
+import com.Battleship.Game.dtos.AccountDTO;
+import com.Battleship.Game.models.Account;
 import com.Battleship.Game.services.AuthService;
-import com.Battleship.Game.services.UserService;
+import com.Battleship.Game.services.AccountService;
 import com.Battleship.Game.services.securityServices.JwtUtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +25,7 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
-    private UserService userService;
+    private AccountService accountService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -56,11 +59,11 @@ public class AuthServiceImpl implements AuthService {
         if (registerDTO.password().length() < 8) {
             return new ResponseEntity<>("The password must have at least 8 characters", HttpStatus.BAD_REQUEST);
         }
-        if (userService.existsByEmail(registerDTO.email())){
+        if (accountService.existsByEmail(registerDTO.email())){
             return new ResponseEntity<>("Email is already in use", HttpStatus.FORBIDDEN);
         }
-        User newUser = new User(registerDTO.email(), registerDTO.fName(), registerDTO.lName(), registerDTO.username(), passwordEncoder.encode(registerDTO.password()));
-        userService.saveUser(newUser);
+        Account newAccount = new Account(registerDTO.email(), registerDTO.fName(), registerDTO.lName(), registerDTO.username(), passwordEncoder.encode(registerDTO.password()));
+        accountService.saveUser(newAccount);
         return new ResponseEntity<>("User created succesfully", HttpStatus.CREATED);
     }
 
@@ -77,8 +80,8 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> getCurrentUser(Authentication authentication){
-        User user = userService.findByEmail(authentication.getName());
-        return ResponseEntity.ok(userService.getUserDTO(user));
+    public ResponseEntity<?> getCurrentUser(Authentication authentication) {
+        Account account = accountService.findByEmail(authentication.getName());
+        return ResponseEntity.ok(accountService.getAccountDTO(account));
     }
 }

@@ -1,53 +1,59 @@
 package com.Battleship.Game.models;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class PlayerMatch {
+
+    //Attributes
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    @JoinColumn(name = "user_id")
+    private Account account;
 
     @ManyToOne
-    @JoinColumn(name = "match_id", nullable = false)
+    @JoinColumn(name = "match_id")
     private Match match;
 
     private LocalDateTime matchDuration;
 
     private boolean turn;
 
-    private playerStatus type;
+    private PlayerStatus type;
 
-    @OneToMany
+    @OneToMany(mappedBy = "playerMatch")
     private List<Board> boards = new ArrayList<>();
 
+
+
+    //Constructors
     public PlayerMatch() {
     }
 
-    public PlayerMatch(Match match, LocalDateTime matchDuration, boolean turn, playerStatus type) {
+    public PlayerMatch(LocalDateTime matchDuration, boolean turn, PlayerStatus type) {
         this.matchDuration = matchDuration;
         this.turn = turn;
         this.type = type;
     }
 
+
+    //Getters and setters
     public long getId() {
         return id;
     }
 
-    public User getUserId() {
-        return userId;
+    public long getUserId() {
+        return account.getId();
     }
 
-    public void setUserId(User userId) {
-        this.userId = userId;
+    public void setUserId(Account account) {
+        this.account = account;
     }
 
     public Match getMatch() {
@@ -74,11 +80,11 @@ public class PlayerMatch {
         this.turn = turn;
     }
 
-    public playerStatus getType() {
+    public PlayerStatus getType() {
         return type;
     }
 
-    public void setType(playerStatus type) {
+    public void setType(PlayerStatus type) {
         this.type = type;
     }
 
@@ -90,7 +96,8 @@ public class PlayerMatch {
         this.boards = boards;
     }
 
-    public void addBoard(Board board){
+    //Methods
+    public void addBoard(Board board) {
         board.setPlayerMatch(this);
         boards.add(board);
     }
