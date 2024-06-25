@@ -20,17 +20,6 @@ public class PlayerServiceImpl implements PlayerService {
     private BoardService boardService;
 
     @Override
-    public void updatePlayerScore(Long playerId, int scorechange){
-        Account account = accountService.findById(playerId);
-        if (scorechange > 0){
-         account.getRanking().incrementScore(scorechange);
-        } else {
-            account.getRanking().decrementScore(-scorechange);
-        }
-        accountService.saveUser(account);
-    }
-
-    @Override
     public void updatePlayerStatus(Long playerId, PlayerStatus newStatus) {
         PlayerMatch playerMatch = playerMatchRepository.findById(playerId).orElse(null);
         if (playerMatch != null){
@@ -46,5 +35,10 @@ public class PlayerServiceImpl implements PlayerService {
     }
     }
 
+    @Override
+    public void updatePlayerScore(Long playerId, int score) {
+        PlayerMatch playerMatch = playerMatchRepository.findById(playerId).orElse(null);
+        
+        }
+    }
 
-}

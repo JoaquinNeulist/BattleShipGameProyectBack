@@ -62,7 +62,7 @@ public class AuthServiceImpl implements AuthService {
         if (accountService.existsByEmail(registerDTO.email())){
             return new ResponseEntity<>("Email is already in use", HttpStatus.FORBIDDEN);
         }
-        Account newAccount = new Account(registerDTO.email(), registerDTO.fName(), registerDTO.lName(), registerDTO.username(), passwordEncoder.encode(registerDTO.password()));
+        Account newAccount = new Account(registerDTO.email(), registerDTO.fName(), registerDTO.lName(), registerDTO.username(), passwordEncoder.encode(registerDTO.password()), 0);
         accountService.saveUser(newAccount);
         return new ResponseEntity<>("User created succesfully", HttpStatus.CREATED);
     }

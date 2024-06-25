@@ -8,9 +8,10 @@ import org.springframework.stereotype.Service;
 @Service
 public interface PlayerService {
 
-    void updatePlayerScore(Long playerId, int scoreChange);
 
     void updatePlayerStatus(Long playerId, PlayerStatus newStatus);
+
+    void updatePlayerScore(Long playerId, int score);
 
     void addBoardToPlayerMatch(Long playerMatchId, Board board);
 }

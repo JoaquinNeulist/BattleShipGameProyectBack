@@ -19,6 +19,6 @@ public interface AccountService {
 
     void saveUser(Account account);
 
-    void updateUserScore(Account account, int scoreChange);
+    List <AccountDTO> getTop10ScoringUsers(int limit);
 
 }

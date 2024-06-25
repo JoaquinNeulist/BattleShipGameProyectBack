@@ -19,6 +19,8 @@ public class AccountDTO {
 
     private List<PlayerMatchDTO> playerMatchDTOS = new ArrayList<>();
 
+    private int score;
+
     public AccountDTO(Account account){
         this.id = account.getId();
         this.fName = account.getfName();
@@ -26,6 +28,7 @@ public class AccountDTO {
         this.email = account.getEmail();
         this.username = account.getUsername();
         this.playerMatchDTOS = account.getPlayersInMatch().stream().map(playerMatch -> new PlayerMatchDTO(playerMatch)).collect(Collectors.toList());
+        this.score = account.getScore();
     }
 
     public long getId() {
@@ -48,5 +51,9 @@ public class AccountDTO {
 
     public List<PlayerMatchDTO> getPlayerMatch() {
         return playerMatchDTOS;
+    }
+
+    public int getScore() {
+    	return score;
     }
 }

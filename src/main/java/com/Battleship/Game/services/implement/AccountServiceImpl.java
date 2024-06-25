@@ -1,13 +1,13 @@
 package com.Battleship.Game.services.implement;
 
 import com.Battleship.Game.dtos.AccountDTO;
-import com.Battleship.Game.models.Ranking;
 import com.Battleship.Game.models.Account;
 import com.Battleship.Game.repositories.AccountRepository;
 import com.Battleship.Game.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,11 +51,13 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public void updateUserScore(Account account, int scoreChange){
-        Ranking ranking = account.getRanking();
-        if (ranking != null){
-            ranking.setScore(ranking.getScore() + scoreChange);
-            accountRepository.save(account);
+    public List<AccountDTO> getTop10ScoringUsers(int limit) {
+            return getListAccountDTO()
+                    .stream().sorted(Comparator.comparingInt(AccountDTO::getScore).reversed())
+                    .limit(11)
+                    .collect(Collectors.toList());
         }
     }
-}
+
+
+
