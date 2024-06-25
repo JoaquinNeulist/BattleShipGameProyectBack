@@ -28,9 +28,6 @@ public class Account {
     @OneToMany(mappedBy = "account")
     private List<PlayerMatch> playersInMatch = new ArrayList<>();
 
-    @ManyToOne
-    private Ranking ranking;
-
     public Account(){}
 
     public Account(String email, String fName, String lName, String username, String password) {
@@ -103,17 +100,10 @@ public class Account {
     }
 
     public void addPlayersInMatch(PlayerMatch playerMatchs){
-        playerMatchs.setUserId(this);
+        playerMatchs.setAccount(this);
         playersInMatch.add(playerMatchs);
     }
 
-    public Ranking getRanking() {
-            return ranking;
-    }
-
-    public void setRanking(Ranking ranking) {
-        this.ranking = ranking;
-    }
 
     @Override
     public String toString() {
@@ -124,7 +114,6 @@ public class Account {
                 ", lName='" + lName + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", rankings=" + ranking +
                 ", playersInMatch=" + playersInMatch +
                 '}';
     }

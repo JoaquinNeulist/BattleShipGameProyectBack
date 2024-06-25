@@ -1,7 +1,6 @@
 package com.Battleship.Game.services.implement;
 
 import com.Battleship.Game.dtos.AccountDTO;
-import com.Battleship.Game.models.Ranking;
 import com.Battleship.Game.models.Account;
 import com.Battleship.Game.repositories.AccountRepository;
 import com.Battleship.Game.services.AccountService;
@@ -50,12 +49,4 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.save(account);
     }
 
-    @Override
-    public void updateUserScore(Account account, int scoreChange){
-        Ranking ranking = account.getRanking();
-        if (ranking != null){
-            ranking.setScore(ranking.getScore() + scoreChange);
-            accountRepository.save(account);
-        }
-    }
 }

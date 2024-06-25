@@ -36,7 +36,7 @@ public class WebConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         //configurar rutas de acuerdo al controlador
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/h2-console/**").permitAll()
-                        .requestMatchers("/api/auth/current").hasRole("CLIENT")
+                        .requestMatchers("/api/auth/current", "/api/match/join", "/api/match/create", "/api/match/**").hasRole("CLIENT")
 //                         .requestMatchers("/api/user/ranking").hasRole("CLIENT")
 //                        .requestMatchers("").hasRole("")
 //                        .requestMatchers("").hasRole("")

@@ -16,35 +16,38 @@ public class PlayerServiceImpl implements PlayerService {
     @Autowired
     private AccountService accountService;
 
-    @Autowired
-    private BoardService boardService;
+//    @Autowired
+//    private BoardService boardService;
 
-    @Override
-    public void updatePlayerScore(Long playerId, int scorechange){
-        Account account = accountService.findById(playerId);
-        if (scorechange > 0){
-         account.getRanking().incrementScore(scorechange);
-        } else {
-            account.getRanking().decrementScore(-scorechange);
-        }
-        accountService.saveUser(account);
+//    @Override
+//    public void updatePlayerScore(Long playerId, int scorechange){
+//        Account account = accountService.findById(playerId);
+//        if (scorechange > 0){
+//         account.getRanking().incrementScore(scorechange);
+//        } else {
+//            account.getRanking().decrementScore(-scorechange);
+//        }
+//        accountService.saveUser(account);
+//    }
+//
+//    @Override
+//    public void updatePlayerStatus(Long playerId, PlayerStatus newStatus) {
+//        PlayerMatch playerMatch = playerMatchRepository.findById(playerId).orElse(null);
+//        if (playerMatch != null){
+//            playerMatch.setType(newStatus);
+//        }
+//    }
+//
+//    @Override
+//    public void addBoardToPlayerMatch(Long playerMatchId, Board board) {
+//    PlayerMatch playerMatch = playerMatchRepository.findById(playerMatchId).orElse(null);
+//    if (playerMatch != null){
+//        playerMatch.addBoard(board);
+//    }
+//    }
+        @Override
+    public void savePlayerMatch(PlayerMatch playerMatch) {
+        playerMatchRepository.save(playerMatch);
     }
-
-    @Override
-    public void updatePlayerStatus(Long playerId, PlayerStatus newStatus) {
-        PlayerMatch playerMatch = playerMatchRepository.findById(playerId).orElse(null);
-        if (playerMatch != null){
-            playerMatch.setType(newStatus);
-        }
-    }
-
-    @Override
-    public void addBoardToPlayerMatch(Long playerMatchId, Board board) {
-    PlayerMatch playerMatch = playerMatchRepository.findById(playerMatchId).orElse(null);
-    if (playerMatch != null){
-        playerMatch.addBoard(board);
-    }
-    }
-
 
 }
