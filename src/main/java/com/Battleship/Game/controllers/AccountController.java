@@ -24,4 +24,9 @@ public class AccountController {
         return ResponseEntity.ok().body(accountDTOS);
     }
 
+    @GetMapping("/ranking")
+    public ResponseEntity<List<AccountDTO>> getTop10Ranking() {
+        List<AccountDTO> top10Accounts = accountService.getTop10ScoringUsers(10);
+        return ResponseEntity.ok().body(top10Accounts);
+    }
 }

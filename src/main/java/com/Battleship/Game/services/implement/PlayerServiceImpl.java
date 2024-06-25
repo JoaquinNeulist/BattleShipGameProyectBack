@@ -19,8 +19,6 @@ public class PlayerServiceImpl implements PlayerService {
     @Autowired
     private BoardService boardService;
 
-
-
     @Override
     public void updatePlayerStatus(Long playerId, PlayerStatus newStatus) {
         PlayerMatch playerMatch = playerMatchRepository.findById(playerId).orElse(null);
@@ -38,8 +36,9 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public void updatePlayerScore(Long loserId, int i) {
-
+    public void updatePlayerScore(Long playerId, int score) {
+        PlayerMatch playerMatch = playerMatchRepository.findById(playerId).orElse(null);
+        
+        }
     }
 
-}

@@ -25,21 +25,22 @@ public class Account {
 
     public String password;
 
-    public int Score;
+    public int score;
 
     @OneToMany(mappedBy = "account")
     private List<PlayerMatch> playersInMatch = new ArrayList<>();
 
+    public Account() {
+    }
 
-    public Account(){}
-
-    public Account(String email, String fName, String lName, String username, String password) {
+    public Account(String email, String fName, String lName, String username, String password, int score) {
         this.email = email;
         this.fName = fName;
         this.lName = lName;
         this.username = username;
         this.password = password;
         this.isAdmin = false; //por defecto el rol de usuario es USER
+        this.score = score;
     }
 
     public long getId() {
@@ -67,7 +68,7 @@ public class Account {
     }
 
     public int getScore() {
-        return Score;
+        return score;
     }
 
     public void setAdmin(boolean admin) {
@@ -107,10 +108,11 @@ public class Account {
     }
 
     public void setScore(int score) {
-        Score = score;
+        this.score = score;
     }
 
-    public void addPlayersInMatch(PlayerMatch playerMatchs){
+    public void addPlayersInMatch(PlayerMatch playerMatchs) {
+
         playerMatchs.setUserId(this);
         playersInMatch.add(playerMatchs);
     }

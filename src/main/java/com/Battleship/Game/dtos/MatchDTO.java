@@ -10,12 +10,15 @@ public class MatchDTO {
 
     private MatchState state;
 
+    private String partyCode;
+
     private LocalDateTime startTime;
 
     private LocalDateTime finalTime;
 
     public MatchDTO(Match match) {
         this.id= match.getId();
+        this.partyCode = match.getPartyCode();
         this.state = match.getState();
         this.startTime = match.getStartTime();
         this.finalTime = match.getFinalTime();
@@ -35,5 +38,9 @@ public class MatchDTO {
 
     public LocalDateTime getFinalTime() {
         return finalTime;
+    }
+
+    public String getPartyCode() {
+        return partyCode;
     }
 }
