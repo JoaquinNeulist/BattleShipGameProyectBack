@@ -65,7 +65,7 @@ public class MatchServiceImpl implements MatchService {
         match.setStartTime(LocalDateTime.now());
         match.setFinalTime(LocalDateTime.now().plusMinutes(30));
         player2.setType(PlayerStatus.WAITING);
-        match.getPlayerMatches().get(0).setType(PlayerStatus.WAITING);
+        match.getPlayerMatches().get(0).setType(PlayerStatus.PLACING_SHIPS);
         playerService.savePlayerMatch(player2);
         matchRepository.save(match);
         return match;
