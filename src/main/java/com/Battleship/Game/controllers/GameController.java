@@ -30,7 +30,8 @@ public class GameController {
     }
 
     @PostMapping("/initializeBoard")
-    public ResponseEntity<?> initializeBoard(@RequestBody Board board, @RequestBody List<Ship> ships){
+    public ResponseEntity<?> initializeBoard(@RequestBody Board board){
+        List<Ship> ships = shipService.getAllShips();
         Board updatedBoard = boardService.initializeBoard(board, ships);
         return ResponseEntity.ok(updatedBoard);
     }
