@@ -8,6 +8,8 @@ import com.Battleship.Game.services.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ShipServiceImpl implements ShipService {
 
@@ -53,5 +55,15 @@ public class ShipServiceImpl implements ShipService {
     @Override
     public Ship getShipById(Long shipId) {
         return shipRepository.findById(shipId).orElse(null);
+    }
+
+    @Override
+    public void saveShip(Ship ship) {
+        shipRepository.save(ship);
+    }
+
+    @Override
+    public List<Ship> getAllShips() {
+        return shipRepository.findAll();
     }
 }

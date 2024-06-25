@@ -18,4 +18,8 @@ public interface ShipService {
     void sinkShip(Long shipId); // Para hundir un barco
 
     Ship getShipById(Long shipId);
+
+    void saveShip(Ship ship);
+
+    List<Ship> getAllShips();
 }

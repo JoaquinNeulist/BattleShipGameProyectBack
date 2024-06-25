@@ -1,13 +1,18 @@
 package com.Battleship.Game.services.implement;
 
 import com.Battleship.Game.models.*;
+import com.Battleship.Game.repositories.ShipRepository;
 import com.Battleship.Game.services.BoardService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
 public class BoardServiceImpl implements BoardService {
+
+    @Autowired
+    private ShipRepository shipRepository;
 
     @Override
     public Board createBoard(String configuration) {
@@ -40,17 +45,19 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ShootResult calculateShootResult(Board board, int x, int y) {
-        for (Ship ship : board.getShips()){
-            if (isHit(ship, x, y)){
+        for (Ship ship : board.getShips()) {
+            if (isHit(ship, x, y)) {
                 ship.setStatus(ShipStatus.HIT);
-                if (isShipSunk(ship)){
+                if (isShipSunk(ship)) {
                     ship.setStatus(ShipStatus.SUNK);
-                    if (allShipsSunk(board)){
+                    if (allShipsSunk(board)) {
                         return ShootResult.WIN;
-                    }else {
+                    } else {
                         return ShootResult.SUNK;
                     }
-                }else {return ShootResult.HIT;}
+                } else {
+                    return ShootResult.HIT;
+                }
             }
         }
         return ShootResult.MISS;
@@ -59,14 +66,14 @@ public class BoardServiceImpl implements BoardService {
     @Override
     public boolean canPlaceShip(Board board, Ship ship, int startX, int startY, boolean isHorizontal) {
         int shipSize = ship.getSize();
-        if(isHorizontal){
+        if (isHorizontal) {
             if (startX + shipSize > 10) return false;
-            for (int i = 0; i < shipSize; i++){
+            for (int i = 0; i < shipSize; i++) {
                 if (isOccupied(board, startX + i, startY)) return false;
             }
-        }else {
+        } else {
             if (startY + shipSize > 10) return false;
-            for (int i = 0; i < shipSize; i++){
+            for (int i = 0; i < shipSize; i++) {
                 if (isOccupied(board, startX, startY + i)) return false;
             }
         }
@@ -75,7 +82,7 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public boolean allShipsSunk(Board board) {
-        for (Ship ship : board.getShips()){
+        for (Ship ship : board.getShips()) {
             if (ship.getStatus() != ShipStatus.SUNK) {
                 return false;
             }
@@ -93,23 +100,23 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public Board initializeBoard(Board board, List<Ship> ships) {
-        for (Ship ship : ships){
+        for (Ship ship : ships) {
             placeShip(board, ship);
         }
         return board;
     }
 
-    private  boolean isOccupied(Board board, int x, int y){
-        for (Ship ship : board.getShips()){
+    private boolean isOccupied(Board board, int x, int y) {
+        for (Ship ship : board.getShips()) {
             int startX = ship.getStartingX();
             int startY = ship.getStartingY();
             int shipSize = ship.getSize();
-            if (ship.isSideways()){
-                if (y == startY && x >= startX && x < startX + shipSize){
+            if (ship.isSideways()) {
+                if (y == startY && x >= startX && x < startX + shipSize) {
                     return true;
                 }
             } else {
-                if (x == startX && y >= startY && y < startY + shipSize){
+                if (x == startX && y >= startY && y < startY + shipSize) {
                     return true;
                 }
             }
@@ -124,7 +131,6 @@ public class BoardServiceImpl implements BoardService {
                 if (coordinate.getStatus() != CoordinateStatus.HIT) {
                     return false;
                 }
-                // Verificar si el barco es horizontal o vertical y comprobar el estado de las coordenadas restantes
                 if (ship.isSideways()) {
                     for (int i = 1; i < ship.getSize(); i++) {
                         Coordinate nextCoordinate = new Coordinate(ship.getStartingX(), ship.getStartingY() + i);
@@ -146,17 +152,14 @@ public class BoardServiceImpl implements BoardService {
         return false;
     }
 
-
-
-    private boolean isHit(Ship ship, int x, int y){
+    private boolean isHit(Ship ship, int x, int y) {
         int startX = ship.getStartingX();
         int startY = ship.getStartingY();
         int shipSize = ship.getSize();
-        if (ship.isSideways()){
+        if (ship.isSideways()) {
             return (y == startY) && (x >= startX) && (x < (startX + shipSize));
         } else {
             return (x == startX) && (y >= startY) && (y < (startY + shipSize));
         }
     }
-
 }
