@@ -15,7 +15,6 @@ public class GameServiceImpl implements GameService {
     public void handleGameEnd(Long winnerId, Long loserId){
         playerService.updatePlayerScore(winnerId, 200);
         playerService.updatePlayerScore(loserId, -100);
-
     }
 }
 

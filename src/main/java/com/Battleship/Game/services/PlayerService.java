@@ -7,10 +7,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface PlayerService {
-
-    void updatePlayerScore(Long playerId, int scoreChange);
-
     void updatePlayerStatus(Long playerId, PlayerStatus newStatus);
-
     void addBoardToPlayerMatch(Long playerMatchId, Board board);
+
+    void updatePlayerScore(Long loserId, int i);
 }
