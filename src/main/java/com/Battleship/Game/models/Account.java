@@ -25,11 +25,11 @@ public class Account {
 
     public String password;
 
+    public int Score;
+
     @OneToMany(mappedBy = "account")
     private List<PlayerMatch> playersInMatch = new ArrayList<>();
 
-    @ManyToOne
-    private Ranking ranking;
 
     public Account(){}
 
@@ -64,6 +64,10 @@ public class Account {
 
     public String getPassword() {
         return password;
+    }
+
+    public int getScore() {
+        return Score;
     }
 
     public void setAdmin(boolean admin) {
@@ -102,17 +106,13 @@ public class Account {
         this.playersInMatch = playersInMatch;
     }
 
+    public void setScore(int score) {
+        Score = score;
+    }
+
     public void addPlayersInMatch(PlayerMatch playerMatchs){
         playerMatchs.setUserId(this);
         playersInMatch.add(playerMatchs);
-    }
-
-    public Ranking getRanking() {
-            return ranking;
-    }
-
-    public void setRanking(Ranking ranking) {
-        this.ranking = ranking;
     }
 
     @Override
@@ -124,7 +124,6 @@ public class Account {
                 ", lName='" + lName + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", rankings=" + ranking +
                 ", playersInMatch=" + playersInMatch +
                 '}';
     }

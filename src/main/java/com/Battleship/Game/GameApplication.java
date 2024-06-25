@@ -26,8 +26,7 @@ public class GameApplication {
 			PlayerMatchRepository playerMatchRepository,
 			BoardRepository boardRepository,
 			ShootRepository shootRepository,
-			ShipRepository shipRepository,
-			RankingRepository rankingRepository
+			ShipRepository shipRepository
 	){
 		return args -> {
 			Account account1 = new Account("Test@mail.com", "joaco", "neulist", "Jota", passwordEncoder.encode("123"));
