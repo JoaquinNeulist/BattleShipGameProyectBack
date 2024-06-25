@@ -112,6 +112,7 @@ public class Account {
     }
 
     public void addPlayersInMatch(PlayerMatch playerMatchs) {
+
         playerMatchs.setUserId(this);
         playersInMatch.add(playerMatchs);
     }
