@@ -1,7 +1,6 @@
 package com.Battleship.Game.controllers;
 
 import com.Battleship.Game.dtos.AccountDTO;
-import com.Battleship.Game.models.Ranking;
 import com.Battleship.Game.services.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +24,5 @@ public class AccountController {
         return ResponseEntity.ok().body(accountDTOS);
     }
 
-    @GetMapping("/user/ranking")
-    public Ranking getRanking(Authentication authentication) {
-        String email = authentication.getName();
-        return accountService.findByEmail(email).getRanking();
-    }
+
 }

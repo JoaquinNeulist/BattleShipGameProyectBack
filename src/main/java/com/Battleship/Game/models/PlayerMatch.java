@@ -1,7 +1,7 @@
 package com.Battleship.Game.models;
 
 import jakarta.persistence.*;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,8 +21,6 @@ public class PlayerMatch {
     @JoinColumn(name = "match_id")
     private Match match;
 
-    private LocalDateTime matchDuration;
-
     private boolean turn;
 
     private PlayerStatus type;
@@ -30,15 +28,11 @@ public class PlayerMatch {
     @OneToMany(mappedBy = "playerMatch")
     private List<Board> boards = new ArrayList<>();
 
-
-
     //Constructors
     public PlayerMatch() {
     }
 
-    public PlayerMatch(LocalDateTime matchDuration, boolean turn, PlayerStatus type) {
-        this.matchDuration = matchDuration;
-        this.turn = turn;
+    public PlayerMatch(PlayerStatus type) {
         this.type = type;
     }
 
@@ -52,7 +46,7 @@ public class PlayerMatch {
         return account.getId();
     }
 
-    public void setUserId(Account account) {
+    public void setAccount(Account account) {
         this.account = account;
     }
 
@@ -62,14 +56,6 @@ public class PlayerMatch {
 
     public void setMatch(Match match) {
         this.match = match;
-    }
-
-    public LocalDateTime getMatchDuration() {
-        return matchDuration;
-    }
-
-    public void setMatchDuration(LocalDateTime matchDuration) {
-        this.matchDuration = matchDuration;
     }
 
     public boolean isTurn() {

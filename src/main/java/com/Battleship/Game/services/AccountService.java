@@ -19,6 +19,5 @@ public interface AccountService {
 
     void saveUser(Account account);
 
-    void updateUserScore(Account account, int scoreChange);
 
 }

@@ -26,15 +26,14 @@ public class GameApplication {
 			PlayerMatchRepository playerMatchRepository,
 			BoardRepository boardRepository,
 			ShootRepository shootRepository,
-			ShipRepository shipRepository,
-			RankingRepository rankingRepository
+			ShipRepository shipRepository
 	){
 		return args -> {
 			Account account1 = new Account("Test@mail.com", "joaco", "neulist", "Jota", passwordEncoder.encode("123"));
 			accountRepository.save(account1);
 			System.out.println(account1);
-			account1.setAdmin(true);
-			System.out.println(account1);
+			Account account2 = new Account("test@mail.com", "joaco2", "neulist", "Jota2", passwordEncoder.encode("456"));
+			accountRepository.save(account2);
 		};
 	}
 }

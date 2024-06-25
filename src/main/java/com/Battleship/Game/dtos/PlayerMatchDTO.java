@@ -21,7 +21,6 @@ public class PlayerMatchDTO {
 
     public PlayerMatchDTO(PlayerMatch playerMatch){
         this.id = playerMatch.getId();
-        this.matchDuration = playerMatch.getMatchDuration();
         this.turn = playerMatch.isTurn();
         this.type = playerMatch.getType();
         this.boardDTOS = playerMatch.getBoards().stream().map(board -> new BoardDTO(board)).collect(Collectors.toList());
@@ -33,10 +32,6 @@ public class PlayerMatchDTO {
 
     public boolean isTurn() {
         return turn;
-    }
-
-    public LocalDateTime getMatchDuration() {
-        return matchDuration;
     }
 
     public PlayerStatus getType() {
