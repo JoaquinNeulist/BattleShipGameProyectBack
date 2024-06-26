@@ -82,6 +82,10 @@ public class PlayerMatch {
         this.board = board;
     }
 
+    public Account getAccount() {
+        return account;
+    }
+
     public void addBoard(Board board) {
         board.setPlayerMatch(this);
         this.board = board;

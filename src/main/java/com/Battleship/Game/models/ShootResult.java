@@ -2,7 +2,5 @@ package com.Battleship.Game.models;
 
 public enum ShootResult {
     MISS,
-    HIT,
-    WIN,
-    SUNK
+    HIT
 }
