@@ -101,22 +101,12 @@ public class ShootController {
     }
 
     private boolean shipContainsCoordinate(Ship ship, Coordinate coordinate) {
-        List<Coordinate> shipCoordinates = deserializeCoordinates(ship.getCoordinates());
         for (Coordinate shipCoordinate : shipCoordinates) {
             if (shipCoordinate.equals(coordinate)) {
                 return true;
             }
         }
         return false;
-    }
-
-    private List<Coordinate> deserializeCoordinates(String coordinates) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(coordinates, new TypeReference<List<Coordinate>>() {});
-        } catch (IOException e) {
-            throw new RuntimeException("Error deserializing coordinates", e);
-        }
     }
 
     private boolean isShipSunk(Ship ship) {
