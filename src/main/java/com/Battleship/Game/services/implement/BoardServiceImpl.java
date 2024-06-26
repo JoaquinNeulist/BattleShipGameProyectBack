@@ -1,12 +1,20 @@
 package com.Battleship.Game.services.implement;
 
 import com.Battleship.Game.models.*;
+import com.Battleship.Game.repositories.BoardRepository;
 import com.Battleship.Game.repositories.ShipRepository;
 import com.Battleship.Game.services.BoardService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 
-import java.util.List;
+import java.util.*;
 
 @Service
 public class BoardServiceImpl implements BoardService {
@@ -14,152 +22,80 @@ public class BoardServiceImpl implements BoardService {
     @Autowired
     private ShipRepository shipRepository;
 
-    @Override
-    public Board createBoard(String configuration) {
-        Board board = new Board();
-        for (int row = 0; row < 10; row++) {
-            for (int column = 0; column < 10; column++) {
-                board.addCoordinate(new Coordinate(row, column));
-            }
-        }
-        board.setConfiguration(configuration);
-        return board;
-    }
+    @Autowired
+    private BoardRepository boardRepository;
 
     @Override
-    public Board placeShip(Board board, Ship ship) {
-        if (canPlaceShip(board, ship, ship.getStartingX(), ship.getStartingY(), ship.isSideways())) {
+    public ResponseEntity<?> createBoard(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest, Authentication authentication) {
+        Optional<Board> optionalBoard = boardRepository.findById(boardId);
+        if (optionalBoard.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Board not found");
+        }
+
+        Board board = optionalBoard.get();
+        List<Ship> ships = new ArrayList<>();
+        Set<Coordinate> usedCoordinates = new HashSet<>();
+        for (ShipRequest shipRequest : boardRequest.getShips()) {
+            if (!areCoordinatesValid(shipRequest.getCoordinates())) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid coordinates for ship: " + shipRequest.getType());
+            }
+
+            for (Coordinate coordinate : shipRequest.getCoordinates()) {
+                if (!usedCoordinates.add(coordinate)) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Coordinate already in use: " + coordinate.getX() + "," + coordinate.getY());
+                }
+            }
+
+            Ship ship = new Ship();
+            ship.setShipType(ShipType.valueOf(shipRequest.getType().toUpperCase()));
+            ship.setSize(shipRequest.getCoordinates().size());
+            ship.setCoordinates(convertCoordinatesToJson(shipRequest.getCoordinates()));
+            ship.setStatus(ShipStatus.INTACT);
             board.addShip(ship);
-            ship.setBoard(board);
+            ships.add(ship);
         }
-        return board;
+        PlayerMatch player = board.getPlayerMatch();
+        player.setType(PlayerStatus.READY);
+        boardRepository.save(board);
+        shipRepository.saveAll(ships);
+
+        return ResponseEntity.ok("Ships added successfully");
     }
 
-    @Override
-    public Shoot registerShoot(Board board, int x, int y) {
-        ShootResult result = calculateShootResult(board, x, y);
-        Shoot shoot = new Shoot(x, y, result);
-        board.addShoot(shoot);
-        return shoot;
-    }
-
-    @Override
-    public ShootResult calculateShootResult(Board board, int x, int y) {
-        for (Ship ship : board.getShips()) {
-            if (isHit(ship, x, y)) {
-                ship.setStatus(ShipStatus.HIT);
-                if (isShipSunk(ship)) {
-                    ship.setStatus(ShipStatus.SUNK);
-                    if (allShipsSunk(board)) {
-                        return ShootResult.WIN;
-                    } else {
-                        return ShootResult.SUNK;
-                    }
-                } else {
-                    return ShootResult.HIT;
-                }
-            }
+    private String convertCoordinatesToJson(List<Coordinate> coordinates) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(coordinates);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error converting coordinates to JSON", e);
         }
-        return ShootResult.MISS;
     }
 
-    @Override
-    public boolean canPlaceShip(Board board, Ship ship, int startX, int startY, boolean isHorizontal) {
-        int shipSize = ship.getSize();
+    private boolean areCoordinatesValid(List<Coordinate> coordinates) {
+        if (coordinates.isEmpty()) {
+            return false;
+        }
+        boolean isHorizontal = coordinates.stream().allMatch(c -> c.getY() == coordinates.get(0).getY());
+        boolean isVertical = coordinates.stream().allMatch(c -> c.getX() == coordinates.get(0).getX());
+        if (!isHorizontal && !isVertical) {
+            return false;
+        }
         if (isHorizontal) {
-            if (startX + shipSize > 10) return false;
-            for (int i = 0; i < shipSize; i++) {
-                if (isOccupied(board, startX + i, startY)) return false;
-            }
-        } else {
-            if (startY + shipSize > 10) return false;
-            for (int i = 0; i < shipSize; i++) {
-                if (isOccupied(board, startX, startY + i)) return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public boolean allShipsSunk(Board board) {
-        for (Ship ship : board.getShips()) {
-            if (ship.getStatus() != ShipStatus.SUNK) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    @Override
-    public BoardStatus getBoardStatus(Board board) {
-        BoardStatus boardStatus = new BoardStatus();
-        boardStatus.setShips(board.getShips());
-        boardStatus.setShoots(board.getShoots());
-        return boardStatus;
-    }
-
-    @Override
-    public Board initializeBoard(Board board, List<Ship> ships) {
-        for (Ship ship : ships) {
-            placeShip(board, ship);
-        }
-        return board;
-    }
-
-    private boolean isOccupied(Board board, int x, int y) {
-        for (Ship ship : board.getShips()) {
-            int startX = ship.getStartingX();
-            int startY = ship.getStartingY();
-            int shipSize = ship.getSize();
-            if (ship.isSideways()) {
-                if (y == startY && x >= startX && x < startX + shipSize) {
-                    return true;
-                }
-            } else {
-                if (x == startX && y >= startY && y < startY + shipSize) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private boolean isShipSunk(Ship ship) {
-        List<Coordinate> boardCoordinates = ship.getBoard().getCoordinates();
-        for (Coordinate coordinate : boardCoordinates) {
-            if (coordinate.getRow() == ship.getStartingX() && coordinate.getColumn() == ship.getStartingY()) {
-                if (coordinate.getStatus() != CoordinateStatus.HIT) {
+            coordinates.sort(Comparator.comparingInt(Coordinate::getX));
+            for (int i = 1; i < coordinates.size(); i++) {
+                if (coordinates.get(i).getX() != coordinates.get(i - 1).getX() + 1) {
                     return false;
                 }
-                if (ship.isSideways()) {
-                    for (int i = 1; i < ship.getSize(); i++) {
-                        Coordinate nextCoordinate = new Coordinate(ship.getStartingX(), ship.getStartingY() + i);
-                        if (!boardCoordinates.contains(nextCoordinate) || boardCoordinates.get(boardCoordinates.indexOf(nextCoordinate)).getStatus() != CoordinateStatus.HIT) {
-                            return false;
-                        }
-                    }
-                } else {
-                    for (int i = 1; i < ship.getSize(); i++) {
-                        Coordinate nextCoordinate = new Coordinate(ship.getStartingX() + i, ship.getStartingY());
-                        if (!boardCoordinates.contains(nextCoordinate) || boardCoordinates.get(boardCoordinates.indexOf(nextCoordinate)).getStatus() != CoordinateStatus.HIT) {
-                            return false;
-                        }
-                    }
+            }
+        } else {
+            coordinates.sort(Comparator.comparingInt(Coordinate::getY));
+            for (int i = 1; i < coordinates.size(); i++) {
+                if (coordinates.get(i).getY() != coordinates.get(i - 1).getY() + 1) {
+                    return false;
                 }
-                return true;
             }
         }
-        return false;
-    }
 
-    private boolean isHit(Ship ship, int x, int y) {
-        int startX = ship.getStartingX();
-        int startY = ship.getStartingY();
-        int shipSize = ship.getSize();
-        if (ship.isSideways()) {
-            return (y == startY) && (x >= startX) && (x < (startX + shipSize));
-        } else {
-            return (x == startX) && (y >= startY) && (y < (startY + shipSize));
-        }
+        return true;
     }
 }

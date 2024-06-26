@@ -15,4 +15,6 @@ public interface PlayerService {
 
     void addBoardToPlayerMatch(Long playerMatchId, Board board);
 
+    void savePlayerMatch(PlayerMatch playerMatch);
+
 }

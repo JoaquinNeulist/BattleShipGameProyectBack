@@ -23,6 +23,7 @@ public class PlayerMatch {
 
     private boolean turn;
 
+    @Enumerated(EnumType.STRING)
     private PlayerStatus type;
 
     @OneToMany(mappedBy = "playerMatch")

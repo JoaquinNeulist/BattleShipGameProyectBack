@@ -15,6 +15,7 @@ public class Match {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Enumerated(EnumType.STRING)
     private MatchState state;
 
     private LocalDateTime startTime;

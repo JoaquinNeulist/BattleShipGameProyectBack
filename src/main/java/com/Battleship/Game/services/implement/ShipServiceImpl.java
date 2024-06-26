@@ -17,24 +17,6 @@ public class ShipServiceImpl implements ShipService {
     private ShipRepository shipRepository;
 
     @Override
-    public Ship createShip(ShipType type, int size, boolean isSideways) {
-        Ship ship = new Ship(type, size, isSideways, ShipStatus.INTACT, -1, -1);
-        return shipRepository.save(ship);
-    }
-
-    @Override
-    public boolean placeShip(Long shipId, int newX, int newY) {
-        Ship ship = shipRepository.findById(shipId).orElse(null);
-        if (ship != null) {
-            ship.setStartingX(newX);
-            ship.setStartingY(newY);
-            shipRepository.save(ship);
-            return true;
-        }
-        return false;
-    }
-
-    @Override
     public void damageShip(Long shipId) {
         Ship ship = shipRepository.findById(shipId).orElse(null);
         if (ship != null) {

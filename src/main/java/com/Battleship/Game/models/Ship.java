@@ -21,19 +21,25 @@ public class Ship {
     @ManyToOne
     private Board board;
 
-    private int startingX;
-
-    private int startingY;
+    @Column(columnDefinition = "json")
+    private String coordinates;
 
     public Ship(){}
 
-    public Ship(ShipType shipType, int size, boolean isSideways, ShipStatus status, int startingX, int startingY){
+    public Ship(ShipType shipType, int size, boolean isSideways, ShipStatus status) {
         this.shipType = shipType;
         this.size = size;
         this.isSideways = isSideways;
         this.status = status;
-        this.startingX = startingX;
-        this.startingY = startingY;
+    }
+
+    public Ship(ShipType shipType, int size, boolean isSideways, ShipStatus status, String coordinates) {
+        this.shipType = shipType;
+        this.size = size;
+        this.isSideways = isSideways;
+        this.status = status;
+        this.coordinates = coordinates;
+
     }
 
     public long getId() {
@@ -48,6 +54,7 @@ public class Ship {
         return isSideways;
     }
 
+
     public ShipStatus getStatus() {
         return status;
     }
@@ -60,12 +67,12 @@ public class Ship {
         return shipType;
     }
 
-    public int getStartingX() {
-        return startingX;
+    public String getCoordinates() {
+        return coordinates;
     }
 
-    public int getStartingY() {
-        return startingY;
+    public void setCoordinates(String coordinates) {
+        this.coordinates = coordinates;
     }
 
     public void setSize(int size) {
@@ -88,11 +95,4 @@ public class Ship {
         this.board = board;
     }
 
-    public void setStartingX(int startingX) {
-        this.startingX = startingX;
-    }
-
-    public void setStartingY(int startingY) {
-        this.startingY = startingY;
-    }
 }

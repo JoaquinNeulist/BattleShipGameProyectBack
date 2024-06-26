@@ -12,6 +12,7 @@ public class Shoot {
 
     private int cordY;
 
+    @Enumerated(EnumType.STRING)
     private ShootResult result;
 
     @ManyToOne

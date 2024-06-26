@@ -3,6 +3,7 @@ package com.Battleship.Game.services.implement;
 import com.Battleship.Game.dtos.MatchDTO;
 import com.Battleship.Game.models.*;
 import com.Battleship.Game.repositories.AccountRepository;
+import com.Battleship.Game.repositories.BoardRepository;
 import com.Battleship.Game.repositories.MatchRepository;
 import com.Battleship.Game.services.MatchService;
 import com.Battleship.Game.services.PlayerService;
@@ -22,6 +23,9 @@ public class MatchServiceImpl implements MatchService {
     private AccountRepository accountRepository;
 
     @Autowired
+    private BoardRepository boardRepository;
+
+    @Autowired
     private PlayerService playerService;
 
     @Override
@@ -32,12 +36,13 @@ public class MatchServiceImpl implements MatchService {
             throw new IllegalStateException("Account not found");
         }
         Match match = new Match(MatchState.WAITING);
-        String partyCode = match.getPartyCode();
         PlayerMatch player1 = new PlayerMatch();
-
+        Board board2 = new Board();
         player1.setAccount(account);
         player1.setType(PlayerStatus.WAITING_FOR_OPPONENT);
+        player1.addBoard(board2);
         playerService.savePlayerMatch(player1);
+        boardRepository.save(board2);
         match.addPlayersMatch(player1);
         matchRepository.save(match);
         return new MatchDTO(match);
@@ -61,12 +66,15 @@ public class MatchServiceImpl implements MatchService {
         }
         match.setState(MatchState.STARTED);
         player2.setType(PlayerStatus.PLACING_SHIPS);
+        Board board1 = new Board();
         match.addPlayersMatch(player2);
+        player2.addBoard(board1);
         match.setStartTime(LocalDateTime.now());
         match.setFinalTime(LocalDateTime.now().plusMinutes(30));
         player2.setType(PlayerStatus.WAITING);
         match.getPlayerMatches().get(0).setType(PlayerStatus.PLACING_SHIPS);
         playerService.savePlayerMatch(player2);
+        boardRepository.save(board1);
         matchRepository.save(match);
         return match;
     }
