@@ -26,8 +26,8 @@ public class PlayerMatch {
     @Enumerated(EnumType.STRING)
     private PlayerStatus type;
 
-    @OneToMany(mappedBy = "playerMatch")
-    private List<Board> boards = new ArrayList<>();
+    @OneToOne(mappedBy = "playerMatch")
+    private Board board;
 
     //Constructors
     public PlayerMatch() {
@@ -37,14 +37,13 @@ public class PlayerMatch {
         this.type = type;
     }
 
-
     //Getters and setters
     public long getId() {
         return id;
     }
 
-    public long getUserId() {
-        return account.getId();
+    public String getMail() {
+        return account.getEmail();
     }
 
     public void setAccount(Account account) {
@@ -75,17 +74,13 @@ public class PlayerMatch {
         this.type = type;
     }
 
-    public List<Board> getBoards() {
-        return boards;
+    public Board getBoard() {
+        return board;
     }
 
-    public void setBoards(List<Board> boards) {
-        this.boards = boards;
+    public void setBoard(Board board) {
+        this.board = board;
     }
 
     //Methods
-    public void addBoard(Board board) {
-        board.setPlayerMatch(this);
-        boards.add(board);
-    }
 }

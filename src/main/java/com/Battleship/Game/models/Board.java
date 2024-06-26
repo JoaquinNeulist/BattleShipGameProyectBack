@@ -16,7 +16,7 @@ public class Board {
     @Column
     private String configuration;
 
-    @ManyToOne
+    @OneToOne(mappedBy = "board")
     private PlayerMatch playerMatch;
 
     @OneToMany(mappedBy = "board")

@@ -18,16 +18,16 @@ public class DataLoader implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         if (shipService.getAllShips().isEmpty()) {
-            shipService.saveShip(new Ship(ShipType.BATTLESHIP, 4, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.CRUISER, 3, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.CRUISER, 3, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.SUBMARINE, 2, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.SUBMARINE, 2, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.SUBMARINE, 2, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.DESTROYER, 1, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.DESTROYER, 1, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.DESTROYER, 1, false, ShipStatus.INTACT));
-            shipService.saveShip(new Ship(ShipType.DESTROYER, 1, false, ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.BATTLESHIP, 4, ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.CRUISER, 3,  ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.CRUISER, 3,  ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.SUBMARINE, 2,  ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.SUBMARINE, 2,  ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.SUBMARINE, 2,  ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.DESTROYER, 1,  ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.DESTROYER, 1,  ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.DESTROYER, 1,  ShipStatus.INTACT));
+            shipService.saveShip(new Ship(ShipType.DESTROYER, 1,  ShipStatus.INTACT));
         }
     }
 }

@@ -7,8 +7,6 @@ import com.Battleship.Game.models.ShipType;
 public class ShipDTO {
     private long id;
 
-    private boolean isSideways;
-
     private ShipStatus status;
 
     private ShipType type;
@@ -18,7 +16,6 @@ public class ShipDTO {
     // Constructor con argumentos
     public ShipDTO(Ship ship) {
         this.id = ship.getId();
-        this.isSideways = ship.isSideways();
         this.type = ship.getShipType();
         this.status = ship.getStatus();
         this.size = ship.getSize();
@@ -40,9 +37,5 @@ public class ShipDTO {
 
     public int getSize() {
         return size;
-    }
-
-    public boolean isSideways() {
-        return isSideways;
     }
 }

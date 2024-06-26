@@ -11,8 +11,6 @@ public class Ship {
     @Enumerated(EnumType.STRING)
     private ShipType shipType;
 
-    private boolean isSideways;
-
     @Enumerated(EnumType.STRING)
     private ShipStatus status;
 
@@ -26,17 +24,15 @@ public class Ship {
 
     public Ship(){}
 
-    public Ship(ShipType shipType, int size, boolean isSideways, ShipStatus status) {
+    public Ship(ShipType shipType, int size, ShipStatus status) {
         this.shipType = shipType;
         this.size = size;
-        this.isSideways = isSideways;
         this.status = status;
     }
 
-    public Ship(ShipType shipType, int size, boolean isSideways, ShipStatus status, String coordinates) {
+    public Ship(ShipType shipType, int size, ShipStatus status, String coordinates) {
         this.shipType = shipType;
         this.size = size;
-        this.isSideways = isSideways;
         this.status = status;
         this.coordinates = coordinates;
 
@@ -49,11 +45,6 @@ public class Ship {
     public int getSize() {
         return size;
     }
-
-    public boolean isSideways() {
-        return isSideways;
-    }
-
 
     public ShipStatus getStatus() {
         return status;
@@ -81,10 +72,6 @@ public class Ship {
 
     public void setShipType(ShipType shipType) {
         this.shipType = shipType;
-    }
-
-    public void setSideways(boolean sideways) {
-        isSideways = sideways;
     }
 
     public void setStatus(ShipStatus status) {

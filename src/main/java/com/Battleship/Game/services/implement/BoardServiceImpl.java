@@ -3,6 +3,7 @@ package com.Battleship.Game.services.implement;
 import com.Battleship.Game.models.*;
 import com.Battleship.Game.repositories.BoardRepository;
 import com.Battleship.Game.repositories.ShipRepository;
+import com.Battleship.Game.services.AccountService;
 import com.Battleship.Game.services.BoardService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,6 +21,9 @@ import java.util.*;
 public class BoardServiceImpl implements BoardService {
 
     @Autowired
+    private AccountService accountService;
+
+    @Autowired
     private ShipRepository shipRepository;
 
     @Autowired
@@ -27,34 +31,46 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     public ResponseEntity<?> createBoard(@PathVariable Long boardId, @RequestBody BoardRequest boardRequest, Authentication authentication) {
+        String email = authentication.getName();
+
+
         Optional<Board> optionalBoard = boardRepository.findById(boardId);
         if (optionalBoard.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Board not found");
         }
 
         Board board = optionalBoard.get();
-        List<Ship> ships = new ArrayList<>();
-        Set<Coordinate> usedCoordinates = new HashSet<>();
-        for (ShipRequest shipRequest : boardRequest.getShips()) {
-            if (!areCoordinatesValid(shipRequest.getCoordinates())) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid coordinates for ship: " + shipRequest.getType());
-            }
-
-            for (Coordinate coordinate : shipRequest.getCoordinates()) {
-                if (!usedCoordinates.add(coordinate)) {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Coordinate already in use: " + coordinate.getX() + "," + coordinate.getY());
-                }
-            }
-
-            Ship ship = new Ship();
-            ship.setShipType(ShipType.valueOf(shipRequest.getType().toUpperCase()));
-            ship.setSize(shipRequest.getCoordinates().size());
-            ship.setCoordinates(convertCoordinatesToJson(shipRequest.getCoordinates()));
-            ship.setStatus(ShipStatus.INTACT);
-            board.addShip(ship);
-            ships.add(ship);
+        if (!board.getPlayerMatch().getMail().equals(email)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access to board");
         }
         PlayerMatch player = board.getPlayerMatch();
+        List<Ship> ships = new ArrayList<>();
+        Set<Coordinate> usedCoordinates = new HashSet<>();
+        if (player.getType() == PlayerStatus.PLACING_SHIPS){
+            for (ShipRequest shipRequest : boardRequest.getShips()) {
+                if (!areCoordinatesValid(shipRequest.getCoordinates())) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid coordinates for ship: " + shipRequest.getType());
+                }
+
+                for (Coordinate coordinate : shipRequest.getCoordinates()) {
+                    if (!usedCoordinates.add(coordinate)) {
+                        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Coordinate already in use: " + coordinate.getX() + "," + coordinate.getY());
+                    }
+                    System.out.println(usedCoordinates);
+                }
+
+                Ship ship = new Ship();
+                ship.setShipType(ShipType.valueOf(shipRequest.getType().toUpperCase()));
+                ship.setSize(shipRequest.getCoordinates().size());
+                ship.setCoordinates(convertCoordinatesToJson(shipRequest.getCoordinates()));
+                ship.setStatus(ShipStatus.INTACT);
+                board.addShip(ship);
+                ships.add(ship);
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Player is ready");
+        }
+
         player.setType(PlayerStatus.READY);
         boardRepository.save(board);
         shipRepository.saveAll(ships);
@@ -95,7 +111,6 @@ public class BoardServiceImpl implements BoardService {
                 }
             }
         }
-
         return true;
     }
 }

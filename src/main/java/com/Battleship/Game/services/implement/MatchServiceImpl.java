@@ -71,7 +71,6 @@ public class MatchServiceImpl implements MatchService {
         player2.addBoard(board1);
         match.setStartTime(LocalDateTime.now());
         match.setFinalTime(LocalDateTime.now().plusMinutes(30));
-        player2.setType(PlayerStatus.WAITING);
         match.getPlayerMatches().get(0).setType(PlayerStatus.PLACING_SHIPS);
         playerService.savePlayerMatch(player2);
         boardRepository.save(board1);
