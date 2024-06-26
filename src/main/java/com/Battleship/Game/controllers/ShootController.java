@@ -78,7 +78,7 @@ public class ShootController {
                 ship.setStatus(ShipStatus.HIT);
                 shipRepository.save(ship);
 
-                if (isShipSunk(ship)) {
+                if (isShipSunk(ship, board)) {
                     ship.setStatus(ShipStatus.SUNK);
                     shipRepository.save(ship);
                 }
@@ -101,7 +101,7 @@ public class ShootController {
     }
 
     private boolean shipContainsCoordinate(Ship ship, Coordinate coordinate) {
-        for (Coordinate shipCoordinate : shipCoordinates) {
+        for (Coordinate shipCoordinate : ship.getShipCoordinates()) {
             if (shipCoordinate.equals(coordinate)) {
                 return true;
             }
@@ -109,25 +109,17 @@ public class ShootController {
         return false;
     }
 
-    private boolean isShipSunk(Ship ship) {
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            // Convertir el JSON de coordenadas a una lista de Strings
-            List<String> coordinates = mapper.readValue(ship.getCoordinates(), new TypeReference<List<String>>(){});
-            // Verificar si todas las coordenadas del barco tienen estado HIT
-            for (String coordinate : coordinates) {
-                if (!coordinate.contains("HIT")) {
-                    return false;
-                }
-
+    private boolean isShipSunk(Ship ship, Board board) {
+        List<Coordinate> shipCoordinates = ship.getShipCoordinates();
+        for (Coordinate coordinate : shipCoordinates){
+            boolean isHit = board.getShoots().stream()
+                    .anyMatch(shoot -> shoot.getCoordinates().equals(coordinate)&& shoot.getResult() == ShootResult.HIT);
+            if (!isHit){
+                return false;
             }
-
-            // Por ahora, devolvemos false para no interferir con el flujo del código
-            return false;
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Manejar la excepción según tu caso
-            return false;
         }
+        return true;
     }
 }
+
+

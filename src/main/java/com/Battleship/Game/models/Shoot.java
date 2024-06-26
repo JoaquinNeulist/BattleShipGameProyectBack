@@ -38,6 +38,10 @@ public class Shoot {
         return id;
     }
 
+    public String getCoordinates() {
+        return coordinates;
+    }
+
     public int getCordX() {
         return cordX;
     }
