@@ -27,7 +27,7 @@ public class Ship {
     @Column(columnDefinition = "json")
     private String coordinates;
 
-    private List<Coordinate> shipCoordinates;
+//    private List<Coordinate> shipCoordinates;
 
     public Ship(){}
 
@@ -89,26 +89,26 @@ public class Ship {
         this.board = board;
     }
 
-    public List<Coordinate> getShipCoordinates(){
-        if (shipCoordinates == null && coordinates != null){
-            ObjectMapper objectMapper = new ObjectMapper();
-            try{
-                shipCoordinates = objectMapper.readValue(coordinates,
-                        objectMapper.getTypeFactory().constructCollectionType(List.class, Coordinate.class));
-            } catch (JsonProcessingException e){
-                e.printStackTrace();
-            }
-        }
-        return shipCoordinates;
-    }
-
-    public void setShipCoordinates(List<Coordinate> shipCoordinates) {
-        this.shipCoordinates = shipCoordinates;
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            this.coordinates = objectMapper.writeValueAsString(shipCoordinates);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    }
+//    public List<Coordinate> getShipCoordinates(){
+//        if (shipCoordinates == null && coordinates != null){
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            try{
+//                shipCoordinates = objectMapper.readValue(coordinates,
+//                        objectMapper.getTypeFactory().constructCollectionType(List.class, Coordinate.class));
+//            } catch (JsonProcessingException e){
+//                e.printStackTrace();
+//            }
+//        }
+//        return shipCoordinates;
+//    }
+//
+//    public void setShipCoordinates(List<Coordinate> shipCoordinates) {
+//        this.shipCoordinates = shipCoordinates;
+//        ObjectMapper objectMapper = new ObjectMapper();
+//        try {
+//            this.coordinates = objectMapper.writeValueAsString(shipCoordinates);
+//        } catch (JsonProcessingException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
