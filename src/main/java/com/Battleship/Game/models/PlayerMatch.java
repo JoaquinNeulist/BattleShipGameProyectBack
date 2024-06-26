@@ -82,5 +82,10 @@ public class PlayerMatch {
         this.board = board;
     }
 
+    public void addBoard(Board board) {
+        board.setPlayerMatch(this);
+        this.board = board;
+    }
+
     //Methods
 }
