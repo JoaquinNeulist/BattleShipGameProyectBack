@@ -4,13 +4,13 @@ import com.Battleship.Game.dtos.ShootRequest;
 import com.Battleship.Game.models.*;
 import com.Battleship.Game.repositories.BoardRepository;
 import com.Battleship.Game.repositories.ShipRepository;
+import com.Battleship.Game.repositories.ShootRepository;
 import com.Battleship.Game.services.AccountService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authorization.method.AuthorizeReturnObject;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +31,9 @@ public class ShootController {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private ShootRepository shootRepository;
+
     @PostMapping("/{boardId}")
     public ResponseEntity<?> shoot(@PathVariable Long boardId, @RequestBody ShootRequest shootRequest, Authentication authentication) {
 
@@ -40,7 +43,6 @@ public class ShootController {
             return new ResponseEntity<>("User not found", HttpStatus.UNAUTHORIZED);
         }
 
-        // Obtener el tablero del oponente (boardId debería ser del tablero del oponente)
         Board board = boardRepository.findById(boardId).orElse(null);
         if (board == null) {
             return new ResponseEntity<>("Board not found", HttpStatus.NOT_FOUND);
@@ -49,7 +51,6 @@ public class ShootController {
         if (match == null) {
             return new ResponseEntity<>("Board does not belong to any match", HttpStatus.NOT_FOUND);
         }
-        // Verificar que el usuario autenticado esté involucrado en la partida (match)
         PlayerMatch player = match.getPlayerMatches().stream()
                 .filter(pm -> pm.getAccount().getId() == account.getId())
                 .findFirst()
@@ -57,62 +58,67 @@ public class ShootController {
         if (player == null) {
             return new ResponseEntity<>("User is not part of this match", HttpStatus.FORBIDDEN);
         }
-
-        // Verificar que el tablero objetivo no sea el propio del usuario autenticado
-        if (board.getPlayerMatch().getAccount().getId() == account.getId()) {
-            return new ResponseEntity<>("Cannot shoot your own board", HttpStatus.BAD_REQUEST);
-        }
-
-        // Verificar que el disparo sea válido
-        if (shootRequest.cordX() < 0 || shootRequest.cordX() >= 10 ||
-                shootRequest.cordX() < 0 || shootRequest.cordY() >= 10) {
-            return new ResponseEntity<>("Invalid coordinates", HttpStatus.FORBIDDEN);
-        }
-        Optional<Ship> optionalShip = board.getShips().stream()
-                .filter(ship -> shipContainsCoordinate(ship, shotCoordinate))
-                .findFirst();
-
-        if (optionalShip.isPresent()) {
-            Ship ship = optionalShip.get();
-
-            // Actualizar estado del barco a HIT
-            ship.setStatus(ShipStatus.HIT);
-            shipRepository.save(ship);
-
-            // Verificar si el barco está hundido
-            if (isShipSunk(ship)) {
-                ship.setStatus(ShipStatus.SUNK);
-                shipRepository.save(ship);
+        if (player.getType() == PlayerStatus.READY){
+            if (board.getPlayerMatch().getAccount().getId() == account.getId()) {
+                return new ResponseEntity<>("Cannot shoot your own board", HttpStatus.BAD_REQUEST);
             }
 
-            // Registrar el disparo en el tablero del oponente
-            Shoot shoot = new Shoot(shotCoordinate);
-            board.addShoot(shoot);
-            boardRepository.save(board);
+            if (shootRequest.cordX() < 0 || shootRequest.cordX() >= 10 ||
+                    shootRequest.cordX() < 0 || shootRequest.cordY() >= 10) {
+                return new ResponseEntity<>("Invalid coordinates", HttpStatus.FORBIDDEN);
+            }
+            Coordinate shootCoordinate = new Coordinate(shootRequest.cordX(), shootRequest.cordY());
+            Optional<Ship> optionalShip = board.getShips().stream()
+                .filter(ship -> shipContainsCoordinate(ship, shootCoordinate))
+                .findFirst();
 
-            // Devolver respuesta de Hit
-            return ResponseEntity.ok("Hit!");
-        } else {
-            // Registrar el disparo en el tablero del oponente
-            Shoot shoot = new Shoot(shotCoordinate);
-            board.addShoot(shoot);
-            boardRepository.save(board);
+            if (optionalShip.isPresent()) {
+                Ship ship = optionalShip.get();
 
-            // Devolver respuesta de Miss
-            return ResponseEntity.ok("Miss!");
+                ship.setStatus(ShipStatus.HIT);
+                shipRepository.save(ship);
+
+                if (isShipSunk(ship)) {
+                    ship.setStatus(ShipStatus.SUNK);
+                    shipRepository.save(ship);
+                }
+                Shoot shoot = new Shoot(shootCoordinate);
+                board.addShoot(shoot);
+                boardRepository.save(board);
+                shoot.setResult(ShootResult.HIT);
+                shootRepository.save(shoot);
+                return new ResponseEntity<>("Hit!", HttpStatus.OK);
+            } else {
+                Shoot shoot = new Shoot(shootCoordinate);
+                board.addShoot(shoot);
+                boardRepository.save(board);
+                shoot.setResult(ShootResult.MISS);
+                shootRepository.save(shoot);
+                return new ResponseEntity<>("Miss!", HttpStatus.OK);
+            }
         }
-
+        return new ResponseEntity<>("User is not ready", HttpStatus.FORBIDDEN);
     }
 
     private boolean shipContainsCoordinate(Ship ship, Coordinate coordinate) {
-        for (Coordinate shipCoordinate : ship.getCoordinates()) {
+        List<Coordinate> shipCoordinates = deserializeCoordinates(ship.getCoordinates());
+        for (Coordinate shipCoordinate : shipCoordinates) {
             if (shipCoordinate.equals(coordinate)) {
                 return true;
             }
         }
         return false;
     }
-    // Método auxiliar para verificar si un barco está completamente hundido
+
+    private List<Coordinate> deserializeCoordinates(String coordinates) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(coordinates, new TypeReference<List<Coordinate>>() {});
+        } catch (IOException e) {
+            throw new RuntimeException("Error deserializing coordinates", e);
+        }
+    }
+
     private boolean isShipSunk(Ship ship) {
         ObjectMapper mapper = new ObjectMapper();
         try {

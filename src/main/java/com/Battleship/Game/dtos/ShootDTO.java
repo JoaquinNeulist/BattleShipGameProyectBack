@@ -2,13 +2,17 @@ package com.Battleship.Game.dtos;
 
 import com.Battleship.Game.models.Shoot;
 import com.Battleship.Game.models.ShootResult;
+import jakarta.persistence.Column;
 
 public class ShootDTO {
     private long id;
-    private int cordX;
-    private int cordY;
+
     private ShootResult result;
 
+    public int cordX;
+    public int cordY;
+
+    private String coordinates;
     // Constructor con argumentos
     public ShootDTO(Shoot shoot) {
         this.id = shoot.getId();
@@ -23,6 +27,10 @@ public class ShootDTO {
         return id;
     }
 
+    public int getCordX() {
+        return cordX;
+    }
+
     public int getCordY() {
         return cordY;
     }
@@ -31,7 +39,4 @@ public class ShootDTO {
         return result;
     }
 
-    public int getCordX() {
-        return cordX;
-    }
 }

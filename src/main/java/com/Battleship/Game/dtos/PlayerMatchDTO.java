@@ -17,13 +17,11 @@ public class PlayerMatchDTO {
 
     private PlayerStatus type;
 
-    private List<BoardDTO> boardDTOS = new ArrayList<>();
 
     public PlayerMatchDTO(PlayerMatch playerMatch){
         this.id = playerMatch.getId();
         this.turn = playerMatch.isTurn();
         this.type = playerMatch.getType();
-        this.boardDTOS = playerMatch.getBoards().stream().map(board -> new BoardDTO(board)).collect(Collectors.toList());
     }
 
     public long getId() {
@@ -38,7 +36,4 @@ public class PlayerMatchDTO {
         return type;
     }
 
-    public List<BoardDTO> getBoardDTOS() {
-        return boardDTOS;
-    }
 }

@@ -26,7 +26,7 @@ public class PlayerMatch {
     @Enumerated(EnumType.STRING)
     private PlayerStatus type;
 
-    @OneToOne(mappedBy = "playerMatch")
+    @OneToOne
     private Board board;
 
     //Constructors

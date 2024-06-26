@@ -8,6 +8,9 @@ public class Shoot {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    @Column(columnDefinition = "json")
+    private String coordinates;
+
     private int cordX;
 
     private int cordY;
@@ -19,6 +22,11 @@ public class Shoot {
     private Board board;
 
     public Shoot () {}
+
+    public Shoot (Coordinate coordinate){
+        this.cordX = coordinate.getX();
+        this.cordY = coordinate.getY();
+    }
 
     public Shoot (int cordX, int cordY, ShootResult result){
         this.cordX = cordX;
