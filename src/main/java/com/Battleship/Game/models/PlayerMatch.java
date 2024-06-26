@@ -26,8 +26,8 @@ public class PlayerMatch {
     @Enumerated(EnumType.STRING)
     private PlayerStatus type;
 
-    @OneToOne
-    private Board board;
+    @OneToMany(mappedBy = "playerMatch")
+    private List<Board> boards = new ArrayList<>();
 
     //Constructors
     public PlayerMatch() {
@@ -74,12 +74,12 @@ public class PlayerMatch {
         this.type = type;
     }
 
-    public Board getBoard() {
-        return board;
+    public List<Board> getBoard() {
+        return boards;
     }
 
-    public void setBoard(Board board) {
-        this.board = board;
+    public void setBoard(List<Board> board) {
+        this.boards = board;
     }
 
     public Account getAccount() {
@@ -88,7 +88,7 @@ public class PlayerMatch {
 
     public void addBoard(Board board) {
         board.setPlayerMatch(this);
-        this.board = board;
+        boards.add(board);
     }
 
     //Methods

@@ -41,8 +41,8 @@ public class MatchServiceImpl implements MatchService {
         player1.setAccount(account);
         player1.setType(PlayerStatus.WAITING_FOR_OPPONENT);
         player1.addBoard(board2);
-        boardRepository.save(board2);
         playerService.savePlayerMatch(player1);
+        boardRepository.save(board2);
         match.addPlayersMatch(player1);
         matchRepository.save(match);
         return new MatchDTO(match);
@@ -72,9 +72,8 @@ public class MatchServiceImpl implements MatchService {
         match.setStartTime(LocalDateTime.now());
         match.setFinalTime(LocalDateTime.now().plusMinutes(30));
         match.getPlayerMatches().get(0).setType(PlayerStatus.PLACING_SHIPS);
-        boardRepository.save(board1);
         playerService.savePlayerMatch(player2);
-
+        boardRepository.save(board1);
         matchRepository.save(match);
         return match;
     }
