@@ -82,6 +82,11 @@ public class MatchServiceImpl implements MatchService {
         return match;
     }
 
+    @Override
+    public void saveMatch(Match match) {
+        matchRepository.save(match);
+    }
+
     private final Random random = new Random();
 
     public void setRandomTurn(PlayerMatch player1, PlayerMatch player2) {

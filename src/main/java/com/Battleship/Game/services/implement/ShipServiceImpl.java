@@ -6,8 +6,12 @@ import com.Battleship.Game.models.ShipStatus;
 import com.Battleship.Game.repositories.ShipRepository;
 import com.Battleship.Game.services.ShipService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -16,27 +20,14 @@ public class ShipServiceImpl implements ShipService {
     @Autowired
     private ShipRepository shipRepository;
 
-    @Override
-    public void damageShip(Long shipId) {
-        Ship ship = shipRepository.findById(shipId).orElse(null);
-        if (ship != null) {
-            ship.setStatus(ShipStatus.HIT);
-            shipRepository.save(ship);
-        }
-    }
 
     @Override
-    public void sinkShip(Long shipId) {
-        Ship ship = shipRepository.findById(shipId).orElse(null);
-        if (ship != null) {
-            ship.setStatus(ShipStatus.SUNK);
-            shipRepository.save(ship);
+    public ResponseEntity<?> knowAllShips(Authentication authentication) {
+        if (!authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized access");
         }
-    }
-
-    @Override
-    public Ship getShipById(Long shipId) {
-        return shipRepository.findById(shipId).orElse(null);
+        List<Ship> ships = generateShipsTemporary();
+        return ResponseEntity.ok(ships);
     }
 
     @Override
@@ -44,8 +35,14 @@ public class ShipServiceImpl implements ShipService {
         shipRepository.save(ship);
     }
 
-    @Override
-    public List<Ship> getAllShips() {
-        return shipRepository.findAll();
+    private List<Ship> generateShipsTemporary(){
+        List<Ship> ships = new ArrayList<>();
+        ships.add(new Ship(ShipType.BATTLESHIP, 4, ShipStatus.INTACT));
+        ships.add(new Ship(ShipType.CRUISER, 2, ShipStatus.INTACT));
+        ships.add(new Ship(ShipType.DESTROYER, 1, ShipStatus.INTACT));
+        ships.add(new Ship(ShipType.SUBMARINE, 3, ShipStatus.INTACT));
+        return ships;
+
     }
+
 }

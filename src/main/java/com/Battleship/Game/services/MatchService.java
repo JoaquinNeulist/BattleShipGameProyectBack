@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 @Service
 public interface MatchService {
 
+    void saveMatch(Match match);
+
     MatchDTO createMatch(Authentication authentication);
 
     Match joinMatch(Authentication authentication, String partyCode);

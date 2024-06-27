@@ -88,6 +88,16 @@ public class BoardServiceImpl implements BoardService {
         return ResponseEntity.ok("Ships added successfully");
     }
 
+    @Override
+    public Optional<Board> findById(Long boardId) {
+        return boardRepository.findById(boardId);
+    }
+
+    @Override
+    public void saveBoard(Board board) {
+        boardRepository.save(board);
+    }
+
 
     private String convertCoordinatesToJson(List<Coordinate> coordinates) {
         ObjectMapper objectMapper = new ObjectMapper();
