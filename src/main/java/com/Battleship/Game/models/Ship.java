@@ -3,6 +3,7 @@ package com.Battleship.Game.models;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -24,7 +25,7 @@ public class Ship {
     private Board board;
 
     @OneToMany(mappedBy = "ship")
-    private List<Coordinate> coordinates;
+    private List<Coordinate> coordinates = new ArrayList<>();
 
     public Ship(){}
 
@@ -86,4 +87,10 @@ public class Ship {
         this.board = board;
     }
 
+    public void addCoordinate(Coordinate newCoordinates) {
+            newCoordinates.setShip(this);
+            coordinates.add(newCoordinates);
+    }
 }
+
+

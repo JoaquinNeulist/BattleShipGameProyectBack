@@ -75,24 +75,22 @@ public class ShootController {
             }
             Coordinate shootCoordinate = new Coordinate(shootRequest.cordX(), shootRequest.cordY());
             System.out.println(shootCoordinate);
-            Optional<Ship> optionalShip = board.getShips().stream()
-                .filter(ship -> shipContainsCoordinate(ship, shootCoordinate))
-                .findFirst();
+            List<Coordinate> usedCoordinates = board.getShips().stream()
+                    .flatMap(ship -> ship.getCoordinates().stream())
+                    .toList();
 
-            if (optionalShip.isPresent()) {
-                Ship ship = optionalShip.get();
 
-                ship.setStatus(ShipStatus.HIT);
-                shipRepository.save(ship);
+            if (existsCoordinate(shootCoordinate, usedCoordinates)) {
 
-                if (isShipSunk(ship, board)) {
-                    ship.setStatus(ShipStatus.SUNK);
-                    shipRepository.save(ship);
-                }
                 Shoot shoot = new Shoot(shootCoordinate);
                 board.addShoot(shoot);
                 boardRepository.save(board);
+                Coordinate hitCoordinate = usedCoordinates.stream().filter(c -> c.getX() == shootCoordinate.getX() && c.getY() == shootCoordinate.getY()).findFirst().orElse(null);
+                hitCoordinate.setHit(true);
+                Ship hitShip = hitCoordinate.getShip();
+                hitShip.setStatus(ShipStatus.HIT);
                 shoot.setResult(ShootResult.HIT);
+
                 shootRepository.save(shoot);
                 return new ResponseEntity<>("Hit!", HttpStatus.OK);
             } else {
@@ -107,13 +105,24 @@ public class ShootController {
         return new ResponseEntity<>("User is not ready", HttpStatus.FORBIDDEN);
     }
 
-    private boolean shipContainsCoordinate(Ship ship, Coordinate coordinate) {
-        List<Coordinate> coordinates = ship.getCoordinates();
-        // Formato correcto para comparar con la cadena JSO
-        System.out.println("Coordinates from Ship: " + coordinates);
-        System.out.println("Coordinate to Find: " + coordinate);
-        return coordinates.contains(coordinate);
+    private boolean existsCoordinate (Coordinate coordinate, List<Coordinate> coordinates) {
+        for (Coordinate c : coordinates) {
+            if (c.getX() == coordinate.getX() && c.getY() == coordinate.getY()) {
+                return true;
+            }
+        }
+        return false;
     }
+
+    private Optional<Ship> getShipByCoordinate(Coordinate coordinate, List<Ship> ships) {
+        for (Ship ship : ships) {
+            if (existsCoordinate(coordinate, ship.getCoordinates())) {
+                return Optional.of(ship);
+            }
+        }
+        return Optional.empty();
+    }
+
 
 
 

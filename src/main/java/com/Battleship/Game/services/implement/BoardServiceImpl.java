@@ -66,9 +66,11 @@ public class BoardServiceImpl implements BoardService {
                 }
 
                 Ship ship = new Ship();
+                for (Coordinate coordinate : shipRequest.getCoordinates()) {
+                    ship.addCoordinate(coordinate);
+                }
                 ship.setShipType(ShipType.valueOf(shipRequest.getType().toUpperCase()));
                 ship.setSize(shipRequest.getCoordinates().size());
-                ship.setCoordinates(shipRequest.getCoordinates());
                 ship.setStatus(ShipStatus.INTACT);
                 board.addShip(ship);
                 ships.add(ship);

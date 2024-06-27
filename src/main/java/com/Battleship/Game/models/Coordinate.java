@@ -18,6 +18,12 @@ public class Coordinate {
 
     private boolean hit;
 
+    public Coordinate() {}
+
+    public Coordinate(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
 
     // Getters y setters
     public int getX() {
@@ -36,23 +42,36 @@ public class Coordinate {
         this.y = y;
     }
 
-    public Coordinate(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Ship getShip() {
+        return ship;
     }
 
+    public boolean isHit() {
+        return hit;
+    }
+
+    public void setShip(Ship ship) {
+        this.ship = ship;
+    }
+
+    public void setHit(boolean hit) {
+        this.hit = hit;
+    }
+
+    public long getId() {
+        return id;
+    }
 
     @Override
     public String toString() {
         return String.format("{\"x\":%d,\"y\":%d}", x, y);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Coordinate that = (Coordinate) o;
-        return x == that.x && y == that.y;
+
+    public boolean equals(Coordinate coordinate) {
+        if (this == coordinate) return true;
+        if (coordinate == null || getClass() != coordinate.getClass()) return false;
+        return this.x == coordinate.x && this.y == coordinate.y;
     }
 
     @Override
