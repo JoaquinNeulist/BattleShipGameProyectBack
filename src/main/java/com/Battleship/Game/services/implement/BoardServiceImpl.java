@@ -2,6 +2,7 @@ package com.Battleship.Game.services.implement;
 
 import com.Battleship.Game.models.*;
 import com.Battleship.Game.repositories.BoardRepository;
+import com.Battleship.Game.repositories.CoordinateRepository;
 import com.Battleship.Game.repositories.ShipRepository;
 import com.Battleship.Game.services.AccountService;
 import com.Battleship.Game.services.BoardService;
@@ -21,6 +22,9 @@ import java.util.*;
 
 @Service
 public class BoardServiceImpl implements BoardService {
+
+    @Autowired
+    private CoordinateRepository coordinateRepository;
 
     @Autowired
     private AccountService accountService;
@@ -64,7 +68,7 @@ public class BoardServiceImpl implements BoardService {
                 Ship ship = new Ship();
                 ship.setShipType(ShipType.valueOf(shipRequest.getType().toUpperCase()));
                 ship.setSize(shipRequest.getCoordinates().size());
-                ship.setCoordinates(convertCoordinatesToJson(shipRequest.getCoordinates()));
+                ship.setCoordinates(shipRequest.getCoordinates());
                 ship.setStatus(ShipStatus.INTACT);
                 board.addShip(ship);
                 ships.add(ship);
@@ -74,8 +78,10 @@ public class BoardServiceImpl implements BoardService {
         }
 
         player.setType(PlayerStatus.READY);
+
         boardRepository.save(board);
         shipRepository.saveAll(ships);
+        coordinateRepository.saveAll(usedCoordinates);
 
         return ResponseEntity.ok("Ships added successfully");
     }

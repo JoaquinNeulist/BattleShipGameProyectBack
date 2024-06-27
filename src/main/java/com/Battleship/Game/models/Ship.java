@@ -1,15 +1,10 @@
 package com.Battleship.Game.models;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.persistence.*;
 
-import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 
 @Entity
 public class Ship {
@@ -28,10 +23,8 @@ public class Ship {
     @ManyToOne
     private Board board;
 
-    @Column(columnDefinition = "json")
-    private String coordinates;
-
-//    private List<Coordinate> shipCoordinates;
+    @OneToMany(mappedBy = "ship")
+    private List<Coordinate> coordinates;
 
     public Ship(){}
 
@@ -41,7 +34,7 @@ public class Ship {
         this.status = status;
     }
 
-    public Ship(ShipType shipType, int size, ShipStatus status, String coordinates) {
+    public Ship(ShipType shipType, int size, ShipStatus status, List<Coordinate> coordinates) {
         this.shipType = shipType;
         this.size = size;
         this.status = status;
@@ -69,11 +62,11 @@ public class Ship {
         return shipType;
     }
 
-    public String getCoordinates() {
+    public List<Coordinate> getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(String coordinates) {
+    public void setCoordinates(List<Coordinate> coordinates) {
         this.coordinates = coordinates;
     }
 
@@ -93,25 +86,4 @@ public class Ship {
         this.board = board;
     }
 
-    // Método para deserializar el JSON de coordinates a una lista de objetos Coordinate
-    public List<Coordinate> getShipCoordinates() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(coordinates,
-                    objectMapper.getTypeFactory().constructCollectionType(List.class, Coordinate.class));
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    // Método para serializar una lista de objetos Coordinate a JSON y almacenarla en coordinates
-    public void setShipCoordinates(List<Coordinate> shipCoordinates) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            this.coordinates = objectMapper.writeValueAsString(shipCoordinates);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-    }
 }

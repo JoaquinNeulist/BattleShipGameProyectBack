@@ -108,12 +108,11 @@ public class ShootController {
     }
 
     private boolean shipContainsCoordinate(Ship ship, Coordinate coordinate) {
-        String coordinatesString = ship.getCoordinates();
-        // Formato correcto para comparar con la cadena JSON
-        String coordinateToFind = coordinate.toString();
-        System.out.println("Coordinates from Ship: " + coordinatesString);
-        System.out.println("Coordinate to Find: " + coordinateToFind);
-        return coordinatesString.contains(coordinateToFind);
+        List<Coordinate> coordinates = ship.getCoordinates();
+        // Formato correcto para comparar con la cadena JSO
+        System.out.println("Coordinates from Ship: " + coordinates);
+        System.out.println("Coordinate to Find: " + coordinate);
+        return coordinates.contains(coordinate);
     }
 
 
@@ -129,15 +128,14 @@ public class ShootController {
 //    }
 
     private boolean isShipSunk(Ship ship, Board board) {
-        String coordinatesString = ship.getCoordinates();
+        List<Coordinate> coordinates = ship.getCoordinates();
         List<Coordinate> hitCoordinates = board.getShoots().stream()
                 .filter(shoot -> shoot.getResult() == ShootResult.HIT)
                 .map(shoot -> new Coordinate(shoot.getCordX(), shoot.getCordY()))
                 .collect(Collectors.toList());
 
         for (Coordinate coordinate : hitCoordinates) {
-            String coordinateStr = String.format("{\"x\":%d,\"y\":%d}", coordinate.getX(), coordinate.getY());
-            if (!coordinatesString.contains(coordinateStr)) {
+            if (!coordinates.contains(coordinate)) {
                 return false;
             }
         }

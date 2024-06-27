@@ -1,16 +1,23 @@
 package com.Battleship.Game.models;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.persistence.*;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
+@Entity
 public class Coordinate {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
     private int x;
     private int y;
+
+    @ManyToOne
+    private Ship ship;
+
+    private boolean hit;
+
 
     // Getters y setters
     public int getX() {
@@ -34,18 +41,6 @@ public class Coordinate {
         this.y = y;
     }
 
-    public String toJsonString() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Map<String, Integer> map = new HashMap<>();
-        map.put("x", this.x);
-        map.put("y", this.y);
-        try {
-            return objectMapper.writeValueAsString(map);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     @Override
     public String toString() {
