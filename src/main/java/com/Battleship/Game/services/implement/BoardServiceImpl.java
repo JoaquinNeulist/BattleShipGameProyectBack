@@ -54,7 +54,7 @@ public class BoardServiceImpl implements BoardService {
         Set<Coordinate> usedCoordinates = new HashSet<>();
         if (player.getType() == PlayerStatus.PLACING_SHIPS){
             for (ShipRequest shipRequest : boardRequest.getShips()) {
-                if (!areCoordinatesValid(shipRequest.getCoordinates())) {
+                if (!areCoordinatesValid(shipRequest.getCoordinates()) || tenToTenTable(shipRequest.getCoordinates())) {
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid coordinates for ship: " + shipRequest.getType());
                 }
 
@@ -98,14 +98,13 @@ public class BoardServiceImpl implements BoardService {
         boardRepository.save(board);
     }
 
-
-    private String convertCoordinatesToJson(List<Coordinate> coordinates) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.writeValueAsString(coordinates);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException("Error converting coordinates to JSON", e);
+    private boolean tenToTenTable(List<Coordinate> coordinates) {
+        for (Coordinate coordinate : coordinates) {
+            if (coordinate.getX() < 0 || coordinate.getX() > 10 || coordinate.getY() < 0 || coordinate.getY() > 10) {
+                return true;
+            }
         }
+        return false;
     }
 
     private boolean areCoordinatesValid(List<Coordinate> coordinates) {
