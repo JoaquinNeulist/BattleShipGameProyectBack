@@ -2,9 +2,10 @@ package com.Battleship.Game.services;
 
 import com.Battleship.Game.dtos.AccountDTO;
 import com.Battleship.Game.models.Account;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public interface AccountService {
 
     List<AccountDTO> getListAccountDTO();
