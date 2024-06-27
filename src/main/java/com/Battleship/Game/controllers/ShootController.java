@@ -57,14 +57,14 @@ public class ShootController {
         if (match == null) {
             return new ResponseEntity<>("Board does not belong to any match", HttpStatus.NOT_FOUND);
         }
-        PlayerMatch player = match.getPlayerMatches().stream()
+        PlayerMatch player1 = match.getPlayerMatches().stream()
                 .filter(pm -> pm.getAccount().getId() == account.getId())
                 .findFirst()
                 .orElse(null);
-        if (player == null) {
+        if (player1 == null) {
             return new ResponseEntity<>("User is not part of this match", HttpStatus.FORBIDDEN);
         }
-        if (player.getType() == PlayerStatus.READY){
+        if (player1.getType() == PlayerStatus.READY){
             if (board.getPlayerMatch().getAccount().getId() == account.getId()) {
                 return new ResponseEntity<>("Cannot shoot your own board", HttpStatus.BAD_REQUEST);
             }
@@ -82,6 +82,7 @@ public class ShootController {
 
             if (existsCoordinate(shootCoordinate, usedCoordinates)) {
 
+
                 Shoot shoot = new Shoot(shootCoordinate);
                 board.addShoot(shoot);
                 boardRepository.save(board);
@@ -90,8 +91,14 @@ public class ShootController {
                 Ship hitShip = hitCoordinate.getShip();
                 hitShip.setStatus(ShipStatus.HIT);
                 shoot.setResult(ShootResult.HIT);
-
+                player1.setTurn(false);
                 shootRepository.save(shoot);
+                if (isShipSunk(hitShip)) {
+                    hitShip.setStatus(ShipStatus.SUNK);
+                    shipRepository.save(hitShip);
+
+                    return new ResponseEntity<>("Ship sunk!", HttpStatus.OK);
+                }
                 return new ResponseEntity<>("Hit!", HttpStatus.OK);
             } else {
                 Shoot shoot = new Shoot(shootCoordinate);
@@ -99,6 +106,7 @@ public class ShootController {
                 boardRepository.save(board);
                 shoot.setResult(ShootResult.MISS);
                 shootRepository.save(shoot);
+                player1.setTurn(false);
                 return new ResponseEntity<>("Miss!", HttpStatus.OK);
             }
         }
@@ -114,43 +122,16 @@ public class ShootController {
         return false;
     }
 
-    private Optional<Ship> getShipByCoordinate(Coordinate coordinate, List<Ship> ships) {
-        for (Ship ship : ships) {
-            if (existsCoordinate(coordinate, ship.getCoordinates())) {
-                return Optional.of(ship);
-            }
-        }
-        return Optional.empty();
-    }
-
-
-
-
-
-//    private boolean isShipSunk(Ship ship, Board board) {
-//        List<Coordinate> shipCoordinates = ship.getShipCoordinates();
-//        return shipCoordinates.stream()
-//                .allMatch(coordinate -> board.getShoots().stream()
-//                        .anyMatch(shoot -> shoot.getCordX() == coordinate.getX() &&
-//                                shoot.getCordY() == coordinate.getY() &&
-//                                shoot.getResult() == ShootResult.HIT));
-//    }
-
-    private boolean isShipSunk(Ship ship, Board board) {
-        List<Coordinate> coordinates = ship.getCoordinates();
-        List<Coordinate> hitCoordinates = board.getShoots().stream()
-                .filter(shoot -> shoot.getResult() == ShootResult.HIT)
-                .map(shoot -> new Coordinate(shoot.getCordX(), shoot.getCordY()))
-                .collect(Collectors.toList());
-
-        for (Coordinate coordinate : hitCoordinates) {
-            if (!coordinates.contains(coordinate)) {
+    private boolean isShipSunk(Ship ship) {
+        for (Coordinate coordinate : ship.getCoordinates()) {
+            if (!coordinate.isHit()) {
                 return false;
             }
         }
         return true;
     }
+ }
 
-}
+
 
 
