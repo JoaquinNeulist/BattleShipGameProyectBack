@@ -6,6 +6,7 @@ import com.Battleship.Game.repositories.ShipRepository;
 import com.Battleship.Game.services.AccountService;
 import com.Battleship.Game.services.BoardService;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -77,6 +79,7 @@ public class BoardServiceImpl implements BoardService {
 
         return ResponseEntity.ok("Ships added successfully");
     }
+
 
     private String convertCoordinatesToJson(List<Coordinate> coordinates) {
         ObjectMapper objectMapper = new ObjectMapper();

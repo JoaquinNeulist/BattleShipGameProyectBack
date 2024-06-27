@@ -11,4 +11,5 @@ import java.util.List;
 public interface BoardService {
 
     ResponseEntity<?> createBoard(Long boardId, BoardRequest boardRequest, Authentication authentication);
+
 }

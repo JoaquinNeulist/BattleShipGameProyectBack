@@ -6,6 +6,7 @@ import com.Battleship.Game.repositories.BoardRepository;
 import com.Battleship.Game.repositories.ShipRepository;
 import com.Battleship.Game.repositories.ShootRepository;
 import com.Battleship.Game.services.AccountService;
+import com.Battleship.Game.services.BoardService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class ShootController {
 
     @Autowired
     private BoardRepository boardRepository;
+
+    @Autowired
+    private BoardService boardService;
 
     @Autowired
     private AccountService accountService;
@@ -70,6 +74,7 @@ public class ShootController {
                 return new ResponseEntity<>("Invalid coordinates", HttpStatus.FORBIDDEN);
             }
             Coordinate shootCoordinate = new Coordinate(shootRequest.cordX(), shootRequest.cordY());
+            System.out.println(shootCoordinate);
             Optional<Ship> optionalShip = board.getShips().stream()
                 .filter(ship -> shipContainsCoordinate(ship, shootCoordinate))
                 .findFirst();
@@ -80,7 +85,7 @@ public class ShootController {
                 ship.setStatus(ShipStatus.HIT);
                 shipRepository.save(ship);
 
-                if (isShipSunk(ship, board.getShoots())) {
+                if (isShipSunk(ship, board)) {
                     ship.setStatus(ShipStatus.SUNK);
                     shipRepository.save(ship);
                 }
@@ -103,40 +108,40 @@ public class ShootController {
     }
 
     private boolean shipContainsCoordinate(Ship ship, Coordinate coordinate) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try{
-            List<String> shipCoordinates = objectMapper.readValue(ship.getCoordinates(), new TypeReference<List<String>>() {});
-            for (String shipCoordinate : shipCoordinates){
-                if (shipCoordinate.equals(coordinate.toString())){
-                    return true;
-                }
-            }
-            return false;
-        }catch (IOException e){
-            throw new RuntimeException("Error parsing coordinates", e);
-        }
+        String coordinatesString = ship.getCoordinates();
+        // Formato correcto para comparar con la cadena JSON
+        String coordinateToFind = coordinate.toString();
+        System.out.println("Coordinates from Ship: " + coordinatesString);
+        System.out.println("Coordinate to Find: " + coordinateToFind);
+        return coordinatesString.contains(coordinateToFind);
     }
 
-    private boolean isShipSunk(Ship ship, List<Shoot> shoots) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try{
-            List<String> shipCoordinates = objectMapper.readValue(ship.getCoordinates(), new TypeReference<List<String>>() {});
-            for (String shipCoordinate : shipCoordinates){
-                boolean coordinateHit = false;
-                for (Shoot shoot : shoots){
-                    if (shoot.getCoordinates().contains(shipCoordinate)&&shoot.getResult() == ShootResult.HIT){
-                        coordinateHit = true;
-                        break;
-                    }
-                }
-                if (!coordinateHit){
-                    return false;
-                }
+
+
+
+//    private boolean isShipSunk(Ship ship, Board board) {
+//        List<Coordinate> shipCoordinates = ship.getShipCoordinates();
+//        return shipCoordinates.stream()
+//                .allMatch(coordinate -> board.getShoots().stream()
+//                        .anyMatch(shoot -> shoot.getCordX() == coordinate.getX() &&
+//                                shoot.getCordY() == coordinate.getY() &&
+//                                shoot.getResult() == ShootResult.HIT));
+//    }
+
+    private boolean isShipSunk(Ship ship, Board board) {
+        String coordinatesString = ship.getCoordinates();
+        List<Coordinate> hitCoordinates = board.getShoots().stream()
+                .filter(shoot -> shoot.getResult() == ShootResult.HIT)
+                .map(shoot -> new Coordinate(shoot.getCordX(), shoot.getCordY()))
+                .collect(Collectors.toList());
+
+        for (Coordinate coordinate : hitCoordinates) {
+            String coordinateStr = String.format("{\"x\":%d,\"y\":%d}", coordinate.getX(), coordinate.getY());
+            if (!coordinatesString.contains(coordinateStr)) {
+                return false;
             }
-            return true;
-        }catch (IOException e){
-            throw new RuntimeException("Error parsing coordinates", e);
         }
+        return true;
     }
 
 }

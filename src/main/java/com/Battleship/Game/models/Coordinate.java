@@ -1,5 +1,11 @@
 package com.Battleship.Game.models;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class Coordinate {
@@ -28,12 +34,22 @@ public class Coordinate {
         this.y = y;
     }
 
+    public String toJsonString() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Map<String, Integer> map = new HashMap<>();
+        map.put("x", this.x);
+        map.put("y", this.y);
+        try {
+            return objectMapper.writeValueAsString(map);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     @Override
     public String toString() {
-        return "Coordinate{" +
-                "x=" + x +
-                ", y=" + y +
-                '}';
+        return String.format("{\"x\":%d,\"y\":%d}", x, y);
     }
 
     @Override
