@@ -2,9 +2,7 @@ package com.Battleship.Game.controllers;
 
 import com.Battleship.Game.dtos.ShootRequest;
 import com.Battleship.Game.models.*;
-import com.Battleship.Game.repositories.BoardRepository;
-import com.Battleship.Game.repositories.ShipRepository;
-import com.Battleship.Game.repositories.ShootRepository;
+import com.Battleship.Game.repositories.*;
 import com.Battleship.Game.services.AccountService;
 import com.Battleship.Game.services.BoardService;
 import com.Battleship.Game.services.PlayerService;
@@ -23,6 +21,9 @@ import java.util.List;
 public class ShootController {
 
     @Autowired
+    private CoordinateRepository coordinateRepository;
+
+    @Autowired
     private ShipRepository shipRepository;
 
     @Autowired
@@ -32,6 +33,9 @@ public class ShootController {
     private PlayerService playerService;
 
     @Autowired
+    private PlayerMatchRepository playerMatchRepository;
+
+    @Autowired
     private BoardService boardService;
 
     @Autowired
@@ -39,6 +43,9 @@ public class ShootController {
 
     @Autowired
     private ShootRepository shootRepository;
+
+    @Autowired
+    private MatchRepository matchRepository;
 
     @PostMapping("/{boardId}")
     public ResponseEntity<?> shoot(@PathVariable Long boardId, @RequestBody ShootRequest shootRequest, Authentication authentication) {
@@ -104,6 +111,9 @@ public class ShootController {
                 if (isShipSunk(hitShip)) {
                     hitShip.setStatus(ShipStatus.SUNK);
                     shipRepository.save(hitShip);
+                    if (areAllShipsSunk(usedCoordinates)) {
+                        return new ResponseEntity<>("You won!", HttpStatus.OK);
+                    }
                     return new ResponseEntity<>("Ship sunk!", HttpStatus.OK);
                 }
                 return new ResponseEntity<>("Hit!", HttpStatus.OK);
@@ -132,6 +142,10 @@ public class ShootController {
         return false;
     }
 
+    private boolean areAllShipsSunk(List<Coordinate> coordinates) {
+        return coordinates.stream().allMatch(Coordinate::isHit);
+    }
+
    private boolean isCoordinateUsed(Coordinate coordinate, List<Shoot> shoots) {
        for (Shoot s : shoots) {
            if (s.getCordX() == coordinate.getX() && s.getCordY() == coordinate.getY()) {
@@ -142,6 +156,21 @@ public class ShootController {
 
    }
 
+    private void deleteMatchData(Match match) {
+        for (PlayerMatch playerMatch : match.getPlayerMatches()) {
+            for (Board board : playerMatch.getBoard()) {
+                for (Ship ship : board.getShips()) {
+                    coordinateRepository.deleteAll(ship.getCoordinates());
+                }
+                shipRepository.deleteAll(board.getShips());
+                shootRepository.deleteAll(board.getShoots());
+                boardRepository.delete(board);
+            }
+            playerMatchRepository.delete(playerMatch);
+        }
+        matchRepository.delete(match);
+
+    }
     private boolean isShipSunk(Ship ship) {
         for (Coordinate coordinate : ship.getCoordinates()) {
             if (!coordinate.isHit()) {
