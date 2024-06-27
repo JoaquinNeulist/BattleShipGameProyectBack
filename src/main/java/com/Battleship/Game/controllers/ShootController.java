@@ -112,6 +112,12 @@ public class ShootController {
                     hitShip.setStatus(ShipStatus.SUNK);
                     shipRepository.save(hitShip);
                     if (areAllShipsSunk(usedCoordinates)) {
+                        match.setState(MatchState.FINISHED);
+                        player1.setType(PlayerStatus.WIN);
+                        player2.setType(PlayerStatus.LOSE);
+                        playerMatchRepository.save(player1);
+                        playerMatchRepository.save(player2);
+                        matchRepository.save(match);
                         return new ResponseEntity<>("You won!", HttpStatus.OK);
                     }
                     return new ResponseEntity<>("Ship sunk!", HttpStatus.OK);
