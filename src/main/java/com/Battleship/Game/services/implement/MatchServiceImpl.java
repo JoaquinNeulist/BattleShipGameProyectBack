@@ -12,6 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Random;
 
 @Service
 public class MatchServiceImpl implements MatchService {
@@ -72,9 +73,24 @@ public class MatchServiceImpl implements MatchService {
         match.setStartTime(LocalDateTime.now());
         match.setFinalTime(LocalDateTime.now().plusMinutes(30));
         match.getPlayerMatches().get(0).setType(PlayerStatus.PLACING_SHIPS);
+        PlayerMatch player1 = match.getPlayerMatches().stream().filter(pm -> pm.getAccount().getId() != account.getId()).findFirst().orElse(null);
+        setRandomTurn(player1, player2);
+        playerService.savePlayerMatch(player1);
         playerService.savePlayerMatch(player2);
         boardRepository.save(board1);
         matchRepository.save(match);
         return match;
+    }
+
+    private final Random random = new Random();
+
+    public void setRandomTurn(PlayerMatch player1, PlayerMatch player2) {
+        if (random.nextBoolean()) {
+            player1.setTurn(true);
+            player2.setTurn(false);
+        } else {
+            player1.setTurn(false);
+            player2.setTurn(true);
+        }
     }
 }

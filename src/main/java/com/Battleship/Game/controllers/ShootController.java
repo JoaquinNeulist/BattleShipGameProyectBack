@@ -7,19 +7,16 @@ import com.Battleship.Game.repositories.ShipRepository;
 import com.Battleship.Game.repositories.ShootRepository;
 import com.Battleship.Game.services.AccountService;
 import com.Battleship.Game.services.BoardService;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.Battleship.Game.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/shoot")
@@ -32,6 +29,9 @@ public class ShootController {
     private BoardRepository boardRepository;
 
     @Autowired
+    private PlayerService playerService;
+
+    @Autowired
     private BoardService boardService;
 
     @Autowired
@@ -42,17 +42,16 @@ public class ShootController {
 
     @PostMapping("/{boardId}")
     public ResponseEntity<?> shoot(@PathVariable Long boardId, @RequestBody ShootRequest shootRequest, Authentication authentication) {
-
         String email = authentication.getName();
         Account account = accountService.findByEmail(email);
         if (account == null) {
             return new ResponseEntity<>("User not found", HttpStatus.UNAUTHORIZED);
         }
-
         Board board = boardRepository.findById(boardId).orElse(null);
         if (board == null) {
             return new ResponseEntity<>("Board not found", HttpStatus.NOT_FOUND);
         }
+        List<Shoot> shoots = board.getShoots();
         Match match = board.getPlayerMatch().getMatch();
         if (match == null) {
             return new ResponseEntity<>("Board does not belong to any match", HttpStatus.NOT_FOUND);
@@ -61,13 +60,19 @@ public class ShootController {
                 .filter(pm -> pm.getAccount().getId() == account.getId())
                 .findFirst()
                 .orElse(null);
+        PlayerMatch player2 = match.getPlayerMatches().stream()
+                .filter(pm -> pm.getAccount().getId() != account.getId()).findFirst().orElse(null);
         if (player1 == null) {
             return new ResponseEntity<>("User is not part of this match", HttpStatus.FORBIDDEN);
         }
         if (player1.getType() == PlayerStatus.READY){
+            if (!player1.isTurn() && player2.isTurn()){
+                return new ResponseEntity<>("It's not your turn", HttpStatus.FORBIDDEN);
+            }
             if (board.getPlayerMatch().getAccount().getId() == account.getId()) {
                 return new ResponseEntity<>("Cannot shoot your own board", HttpStatus.BAD_REQUEST);
             }
+
 
             if (shootRequest.cordX() < 0 || shootRequest.cordX() >= 10 ||
                     shootRequest.cordX() < 0 || shootRequest.cordY() >= 10) {
@@ -75,14 +80,14 @@ public class ShootController {
             }
             Coordinate shootCoordinate = new Coordinate(shootRequest.cordX(), shootRequest.cordY());
             System.out.println(shootCoordinate);
+            if (isCoordinateUsed(shootCoordinate, shoots)) {
+                return new ResponseEntity<>("Coordinate already hit", HttpStatus.FORBIDDEN);
+            }
             List<Coordinate> usedCoordinates = board.getShips().stream()
                     .flatMap(ship -> ship.getCoordinates().stream())
                     .toList();
 
-
             if (existsCoordinate(shootCoordinate, usedCoordinates)) {
-
-
                 Shoot shoot = new Shoot(shootCoordinate);
                 board.addShoot(shoot);
                 boardRepository.save(board);
@@ -92,11 +97,13 @@ public class ShootController {
                 hitShip.setStatus(ShipStatus.HIT);
                 shoot.setResult(ShootResult.HIT);
                 player1.setTurn(false);
+                player2.setTurn(true);
+                playerService.savePlayerMatch(player1);
+                playerService.savePlayerMatch(player2);
                 shootRepository.save(shoot);
                 if (isShipSunk(hitShip)) {
                     hitShip.setStatus(ShipStatus.SUNK);
                     shipRepository.save(hitShip);
-
                     return new ResponseEntity<>("Ship sunk!", HttpStatus.OK);
                 }
                 return new ResponseEntity<>("Hit!", HttpStatus.OK);
@@ -107,6 +114,9 @@ public class ShootController {
                 shoot.setResult(ShootResult.MISS);
                 shootRepository.save(shoot);
                 player1.setTurn(false);
+                player2.setTurn(true);
+                playerService.savePlayerMatch(player1);
+                playerService.savePlayerMatch(player2);
                 return new ResponseEntity<>("Miss!", HttpStatus.OK);
             }
         }
@@ -121,6 +131,16 @@ public class ShootController {
         }
         return false;
     }
+
+   private boolean isCoordinateUsed(Coordinate coordinate, List<Shoot> shoots) {
+       for (Shoot s : shoots) {
+           if (s.getCordX() == coordinate.getX() && s.getCordY() == coordinate.getY()) {
+               return true;
+           }
+       }
+       return false;
+
+   }
 
     private boolean isShipSunk(Ship ship) {
         for (Coordinate coordinate : ship.getCoordinates()) {
