@@ -98,13 +98,19 @@ public class ShootServiceImpl implements ShootService {
                 playerService.savePlayerMatch(player1);
                 playerService.savePlayerMatch(player2);
                 shootRepository.save(shoot);
+                shipService.saveShip(hitShip);
                 if (isShipSunk(hitShip)) {
                     hitShip.setStatus(ShipStatus.SUNK);
                     shipService.saveShip(hitShip);
                     if (areAllShipsSunk(usedCoordinates)) {
                         match.setState(MatchState.FINISHED);
                         player1.setType(PlayerStatus.WIN);
+                        player1.getAccount().setScore(player1.getAccount().getScore() + 200);
                         player2.setType(PlayerStatus.LOSE);
+                        player2.getAccount().setScore(player2.getAccount().getScore() - 200);
+                        if (player2.getAccount().getScore() < 0) {
+                            player2.getAccount().setScore(0);
+                        }
                         playerService.savePlayerMatch(player1);
                         playerService.savePlayerMatch(player2);
                         matchService.saveMatch(match);

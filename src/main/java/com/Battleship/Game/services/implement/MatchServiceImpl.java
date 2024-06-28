@@ -5,6 +5,7 @@ import com.Battleship.Game.models.*;
 import com.Battleship.Game.repositories.AccountRepository;
 import com.Battleship.Game.repositories.BoardRepository;
 import com.Battleship.Game.repositories.MatchRepository;
+import com.Battleship.Game.services.AccountService;
 import com.Battleship.Game.services.MatchService;
 import com.Battleship.Game.services.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Random;
 
 @Service
 public class MatchServiceImpl implements MatchService {
+
+    @Autowired
+    private AccountService accountService;
 
     @Autowired
     private MatchRepository matchRepository;
@@ -97,5 +102,21 @@ public class MatchServiceImpl implements MatchService {
             player1.setTurn(false);
             player2.setTurn(true);
         }
+    }
+
+    @Override
+    public MatchDTO getCurrentMatch(Authentication authentication) {
+        Account account = accountService.findByEmail(authentication.getName());
+        if (account == null){
+            throw new IllegalStateException("Account not found");
+        }
+
+        List<PlayerMatch> playerMatches = account.getPlayersInMatch();
+        for (PlayerMatch playerMatch : playerMatches) {
+            if (playerMatch.getType() == PlayerStatus.READY) {
+                return new MatchDTO(playerMatch.getMatch());
+            }
+        }
+        return null;
     }
 }

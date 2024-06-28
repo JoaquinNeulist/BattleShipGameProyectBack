@@ -15,5 +15,7 @@ public interface MatchService {
 
     Match joinMatch(Authentication authentication, String partyCode);
 
+    MatchDTO getCurrentMatch(Authentication authentication);
+
 
 }
