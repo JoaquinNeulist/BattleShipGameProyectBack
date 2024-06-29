@@ -89,7 +89,7 @@ public class Match {
         playerMatches.add(playerMatch);
     }
 
-    private String generateUniqueCode() {
+    public String generateUniqueCode() {
         return UUID.randomUUID().toString().substring(0, 8);
     }
 }
