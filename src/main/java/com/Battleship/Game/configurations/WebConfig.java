@@ -37,8 +37,7 @@ public class WebConfig {
                         //configurar rutas de acuerdo al controlador
                         .requestMatchers("/api/auth/register", "/api/auth/login", "/h2-console/**", "/api/ranking").permitAll()
                         .requestMatchers("/api/auth/current", "/api/match/join", "/api/match/create", "/api/match/**").authenticated()
-                                .requestMatchers("/api/user").hasRole("ADMIN")
-//                         .requestMatchers("/api/user/ranking").hasRole("CLIENT")
+                        .requestMatchers("/api/user").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
