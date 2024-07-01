@@ -21,6 +21,8 @@ public class PlayerMatch {
     @JoinColumn(name = "match_id")
     private Match match;
 
+    public int score;
+
     private boolean turn;
 
     @Enumerated(EnumType.STRING)
@@ -32,6 +34,8 @@ public class PlayerMatch {
     //Constructors
     public PlayerMatch() {
     }
+
+
 
     public PlayerMatch(PlayerStatus type) {
         this.type = type;

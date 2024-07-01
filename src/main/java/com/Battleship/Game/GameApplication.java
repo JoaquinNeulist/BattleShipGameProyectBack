@@ -33,6 +33,7 @@ public class GameApplication {
 			accountRepository.save(account1);
 			System.out.println(account1);
 			Account account2 = new Account("Test@mail2.com", "Agus", "Russo", "AgusR", passwordEncoder.encode("123"), 10);
+			account2.setAdmin(true);
             accountRepository.save(account2);
 			Account account3 = new Account("Test@mail3.com", "Mayco", "Dominguez", "Mayk", passwordEncoder.encode("123"), 9);
 			accountRepository.save(account3);
