@@ -34,7 +34,8 @@ public class GameApplication {
 			account1.setAdmin(true);
 			System.out.println(account1);
 			Account account2 = new Account("Test@mail2.com", "Agus", "Russo", "AgusR", passwordEncoder.encode("123"), 1);
-            accountRepository.save(account2);
+            account2.setAdmin(true);
+			accountRepository.save(account2);
 			Account account3 = new Account("Test@mail3.com", "Mayco", "Dominguez", "Mayk", passwordEncoder.encode("123"), 2);
 			accountRepository.save(account3);
 			Account account4 = new Account("Test@mail4.com", "Chris", "Vega", "Kryzpo", passwordEncoder.encode("123"), 3);

@@ -17,6 +17,8 @@ public class AccountDTO {
 
     private String username;
 
+    private boolean isAdmin;
+
     private List<PlayerMatchDTO> playerMatchDTOS = new ArrayList<>();
 
     private int score;
@@ -27,6 +29,7 @@ public class AccountDTO {
         this.lName = account.getlName();
         this.email = account.getEmail();
         this.username = account.getUsername();
+        this.isAdmin = account.isAdmin();
         this.playerMatchDTOS = account.getPlayersInMatch().stream().map(playerMatch -> new PlayerMatchDTO(playerMatch)).collect(Collectors.toList());
         this.score = account.getScore();
     }
@@ -47,6 +50,10 @@ public class AccountDTO {
 
     public String getEmail() {
         return email;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
     }
 
     public List<PlayerMatchDTO> getPlayerMatch() {
