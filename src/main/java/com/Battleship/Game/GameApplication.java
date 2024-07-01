@@ -32,9 +32,10 @@ public class GameApplication {
 			Account account1 = new Account("Test@mail.com", "joaco", "neulist", "Jota", passwordEncoder.encode("123"), 15);
 			accountRepository.save(account1);
 			System.out.println(account1);
-			Account account2 = new Account("Test@mail2.com", "Agus", "Russo", "AgusR", passwordEncoder.encode("123"), 10);
-            accountRepository.save(account2);
-			Account account3 = new Account("Test@mail3.com", "Mayco", "Dominguez", "Mayk", passwordEncoder.encode("123"), 9);
+			Account account2 = new Account("Test@mail2.com", "Agus", "Russo", "AgusR", passwordEncoder.encode("123"), 1);
+      account2.setAdmin(true);
+			accountRepository.save(account2);
+			Account account3 = new Account("Test@mail3.com", "Mayco", "Dominguez", "Mayk", passwordEncoder.encode("123"), 2);
 			accountRepository.save(account3);
 			Account account4 = new Account("Test@mail4.com", "Chris", "Vega", "Kryzpo", passwordEncoder.encode("123"), 15);
 			accountRepository.save(account4);

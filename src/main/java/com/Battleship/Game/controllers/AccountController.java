@@ -29,4 +29,6 @@ public class AccountController {
         List<AccountDTO> top10Accounts = accountService.getTop10ScoringUsers(10);
         return ResponseEntity.ok().body(top10Accounts);
     }
+
+
 }

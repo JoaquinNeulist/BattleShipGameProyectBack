@@ -71,12 +71,12 @@ public class Account {
         return score;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
-    }
-
     public boolean isAdmin() {
         return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 
     public List<PlayerMatch> getPlayersInMatch() {
@@ -119,14 +119,15 @@ public class Account {
 
     @Override
     public String toString() {
-        return "User{" +
+        return "Account{" +
                 "id=" + id +
                 ", email='" + email + '\'' +
+                ", isAdmin=" + isAdmin +
                 ", fName='" + fName + '\'' +
                 ", lName='" + lName + '\'' +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", playersInMatch=" + playersInMatch +
+                ", score=" + score +
                 '}';
     }
 }
