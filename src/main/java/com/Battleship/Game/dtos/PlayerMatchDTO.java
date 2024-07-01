@@ -19,8 +19,11 @@ public class PlayerMatchDTO {
 
     private String username;
 
+    private AccountDTO2 account;
+
     public PlayerMatchDTO(PlayerMatch playerMatch){
         this.id = playerMatch.getId();
+        this.account = new AccountDTO2(playerMatch.getAccount());
         this.turn = playerMatch.isTurn();
         this.type = playerMatch.getType();
         this.boards = playerMatch.getBoard().stream().map(board -> new BoardDTO(board)).collect(Collectors.toList());
@@ -37,6 +40,10 @@ public class PlayerMatchDTO {
 
     public List<BoardDTO> getBoards() {
         return boards;
+    }
+
+    public AccountDTO2 getAccount() {
+        return account;
     }
 
     public boolean isTurn() {
