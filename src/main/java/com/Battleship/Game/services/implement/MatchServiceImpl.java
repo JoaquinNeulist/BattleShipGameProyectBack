@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 public class MatchServiceImpl implements MatchService {
@@ -112,8 +113,10 @@ public class MatchServiceImpl implements MatchService {
         }
 
         List<PlayerMatch> playerMatches = account.getPlayersInMatch();
+        List<Match> matches = playerMatches.stream().map(pm -> pm.getMatch()).collect(Collectors.toList());
+
         for (PlayerMatch playerMatch : playerMatches) {
-            if (playerMatch.getType() == PlayerStatus.READY) {
+            if (playerMatch.getType() == PlayerStatus.WAITING_FOR_OPPONENT || playerMatch.getType() == PlayerStatus.READY || playerMatch.getType() == PlayerStatus.PLACING_SHIPS) {
                 return new MatchDTO(playerMatch.getMatch());
             }
         }
